@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,8 +11,6 @@ func AddProduct(service *adding.Service) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var product adding.Product
 		if err := ctx.ShouldBind(&product); err != nil {
-			fmt.Printf("%+v", product)
-			fmt.Println(err)
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": "Can't parse incoming request data",
 			})
