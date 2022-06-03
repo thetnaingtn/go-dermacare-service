@@ -1,9 +1,27 @@
 package main
 
 import (
-	"github.com/thetnaingtn/go-dermacare-service/package/storage/mongo"
+	"context"
+	"log"
+
+	"github.com/thetnaingtn/go-dermacare-service/pkg/adding"
+	routes "github.com/thetnaingtn/go-dermacare-service/pkg/http/rest"
+	"github.com/thetnaingtn/go-dermacare-service/pkg/storage/mongo"
 )
 
 func main() {
-	mongo.Setup()
+	client := mongo.Setup()
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+
+	repository := mongo.NewRepository(client)
+	addingService := adding.NewService(repository)
+
+	router := routes.InitializeRoute(addingService)
+
+	log.Fatalln(router.Run(":3000"))
+
 }
