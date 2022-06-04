@@ -4,14 +4,18 @@ type Repository interface {
 	AddProduct(payload Product) (string, error)
 }
 
-type Service struct {
+type Service interface {
+	AddProduct(payload Product) (string, error)
+}
+
+type service struct {
 	r Repository
 }
 
-func NewService(r Repository) *Service {
-	return &Service{r}
+func NewService(r Repository) Service {
+	return &service{r}
 }
 
-func (s *Service) AddProduct(product Product) (string, error) {
+func (s *service) AddProduct(product Product) (string, error) {
 	return s.r.AddProduct(product)
 }

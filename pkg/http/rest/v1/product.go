@@ -10,7 +10,7 @@ import (
 	"github.com/thetnaingtn/go-dermacare-service/pkg/listing"
 )
 
-func AddProduct(service *adding.Service) gin.HandlerFunc {
+func AddProduct(service adding.Service) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var product adding.Product
 		if err := ctx.ShouldBind(&product); err != nil {
@@ -37,7 +37,7 @@ func AddProduct(service *adding.Service) gin.HandlerFunc {
 	}
 }
 
-func GetProducts(service *listing.Service) gin.HandlerFunc {
+func GetProducts(service listing.Service) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		p := ctx.Query("page")
 		size := ctx.DefaultQuery("pageSize", "10")

@@ -4,15 +4,19 @@ type Repository interface {
 	GetProducts(page, pageSize int) ([]Product, int64, error)
 }
 
-type Service struct {
+type Service interface {
+	GetProducts(page, pageSize int) ([]Product, int64, error)
+}
+
+type service struct {
 	r Repository
 }
 
-func NewService(r Repository) *Service {
-	return &Service{r}
+func NewService(r Repository) Service {
+	return &service{r}
 }
 
-func (s *Service) GetProducts(page, pageSize int) ([]Product, int64, error) {
+func (s *service) GetProducts(page, pageSize int) ([]Product, int64, error) {
 	products, count, err := s.r.GetProducts(page, pageSize)
 	if err != nil {
 		return nil, 0, err

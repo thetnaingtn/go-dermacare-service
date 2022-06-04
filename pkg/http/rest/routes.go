@@ -7,7 +7,7 @@ import (
 	"github.com/thetnaingtn/go-dermacare-service/pkg/listing"
 )
 
-func InitializeRoute(a *adding.Service, l *listing.Service) *gin.Engine {
+func InitializeRoute(a adding.Service, l listing.Service) *gin.Engine {
 	router := gin.Default()
 
 	router.POST("/products", v1.AddProduct(a))
