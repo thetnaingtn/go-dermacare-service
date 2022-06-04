@@ -65,3 +65,22 @@ func (r *Repository) GetProducts(page int, pageSize int) ([]listing.Product, int
 
 	return products, count, nil
 }
+
+func (r *Repository) AddCategory(category adding.Category) (string, error) {
+	collection := r.db.Collection("categories")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	category.CreatedAt = time.Now()
+	category.UpdatedAt = time.Now()
+	result, err := collection.InsertOne(ctx, category)
+	if err != nil {
+		return "", err
+	}
+
+	id, ok := result.InsertedID.(primitive.ObjectID)
+	if !ok {
+		return "", nil
+	}
+
+	return id.Hex(), nil
+}
