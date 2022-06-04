@@ -19,8 +19,3 @@ type Product struct {
 	CreatedAt    time.Time          `json:"created_at"`
 	UpdatedAt    time.Time          `json:"updated_at"`
 }
-
-// type ProductsResponse struct {
-// 	Products []Product `json:"products"`
-// 	Total    int       `json:"total"`
-// }
