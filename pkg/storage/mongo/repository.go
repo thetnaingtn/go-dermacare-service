@@ -32,7 +32,8 @@ func (r *Repository) AddProduct(product adding.Product) (string, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
+	product.CreatedAt = time.Now()
+	product.UpdatedAt = time.Now()
 	result, err := collection.InsertOne(ctx, product)
 	if err != nil {
 		return "", err
