@@ -27,7 +27,7 @@ func NewRepository(client *mongo.Client) *Repository {
 	return &Repository{db}
 }
 
-func (r *Repository) AddProduct(product adding.Product) string {
+func (r *Repository) AddProduct(product adding.Product) (string, error) {
 	collection := r.db.Collection("products")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -35,14 +35,15 @@ func (r *Repository) AddProduct(product adding.Product) string {
 
 	result, err := collection.InsertOne(ctx, product)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	if id, ok := result.InsertedID.(primitive.ObjectID); ok {
-		return id.Hex()
+	id, ok := result.InsertedID.(primitive.ObjectID)
+	if !ok {
+		return "", nil
 	}
 
-	return ""
+	return id.Hex(), nil
 
 }
 

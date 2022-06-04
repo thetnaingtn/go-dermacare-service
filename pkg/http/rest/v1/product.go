@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -16,10 +17,19 @@ func AddProduct(service *adding.Service) gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": "Can't parse incoming request data",
 			})
+			log.Println(err)
 			return
 		}
 
-		id := service.AddProduct(product)
+		id, err := service.AddProduct(product)
+		if err != nil {
+			ctx.JSON(500, gin.H{
+				"message": "Can't create product",
+			})
+			log.Println(err)
+			return
+		}
+
 		ctx.JSON(201, gin.H{
 			"message": "Successfully create product",
 			"id":      id,
@@ -43,6 +53,7 @@ func GetProducts(service *listing.Service) gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"message": "Couldn't parse the incoming page no",
 			})
+			log.Println(err)
 			return
 		}
 		pageSize, err := strconv.Atoi(size)
@@ -50,6 +61,7 @@ func GetProducts(service *listing.Service) gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"message": "Couldn't parse the incoming page no",
 			})
+			log.Println(err)
 			return
 		}
 
@@ -58,6 +70,7 @@ func GetProducts(service *listing.Service) gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"message": "Couldn't retrieve products",
 			})
+			log.Println(err)
 			return
 		}
 
