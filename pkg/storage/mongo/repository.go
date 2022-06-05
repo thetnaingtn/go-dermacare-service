@@ -84,3 +84,23 @@ func (r *Repository) AddCategory(category adding.Category) (string, error) {
 
 	return id.Hex(), nil
 }
+
+func (r *Repository) AddOrder(order adding.Order) (string, error) {
+	collection := r.db.Collection("orders")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	order.CreatedAt = time.Now()
+	order.UpdatedAt = time.Now()
+	result, err := collection.InsertOne(ctx, order)
+	if err != nil {
+		return "", err
+	}
+
+	id, ok := result.InsertedID.(primitive.ObjectID)
+	if !ok {
+		return "", nil
+	}
+
+	return id.Hex(), nil
+}
