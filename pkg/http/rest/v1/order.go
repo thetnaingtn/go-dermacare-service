@@ -10,7 +10,7 @@ import (
 
 func AddOrder(service adding.Service) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var order adding.Order
+		var order adding.OrderForm
 		if err := ctx.ShouldBind(&order); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": "Can't parse incoming request data",

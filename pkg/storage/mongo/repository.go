@@ -66,6 +66,26 @@ func (r *Repository) GetProducts(page int, pageSize int) ([]listing.Product, int
 	return products, count, nil
 }
 
+func (r *Repository) GetProductByIds(ids []primitive.ObjectID) (products adding.OrderItems, err error) {
+	collection := r.db.Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, bson.M{"_id": bson.M{"$in": ids}}, options.Find().SetProjection(bson.M{"name": 1, "price": 1, "selling_price": 1}))
+	if err != nil {
+		return nil, err
+	}
+
+	err = cursor.All(ctx, &products)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return products, err
+
+}
+
 func (r *Repository) AddCategory(category adding.Category) (string, error) {
 	collection := r.db.Collection("categories")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
