@@ -22,6 +22,7 @@ type OrderItem struct {
 	Name         string             `json:"name" bson:"name"`
 	Price        int64              `json:"price" bson:"price"`
 	SellingPrice int64              `json:"selling_price" bson:"selling_price"`
+	Category     primitive.ObjectID `json:"category,omitempty" bson:"category,omitempty"`
 	Quantity     int                `json:"quantity" bson:"quantity"`
 }
 type Order struct {
