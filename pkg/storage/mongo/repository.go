@@ -71,7 +71,7 @@ func (r *Repository) GetProductByIds(ids []primitive.ObjectID) (products adding.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	cursor, err := collection.Find(ctx, bson.M{"_id": bson.M{"$in": ids}}, options.Find().SetProjection(bson.M{"name": 1, "price": 1, "selling_price": 1, "category": 1}))
+	cursor, err := collection.Find(ctx, bson.M{"_id": bson.M{"$in": ids}}, options.Find().SetProjection(bson.M{"name": 1, "price": 1, "selling_price": 1, "categories": 1}))
 	if err != nil {
 		return nil, err
 	}
