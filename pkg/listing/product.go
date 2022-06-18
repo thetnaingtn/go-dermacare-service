@@ -16,7 +16,7 @@ type Product struct {
 	Description  string               `json:"description,omitempty" bson:"description,omitempty"`
 	Supplier     primitive.ObjectID   `json:"supplier,omitempty" bson:"supplier,omitempty"`
 	MinimumStock int                  `json:"miminum_stock,omitempty" bson:"minimum_stock,omitempty"`
-	Critical     bool                 `json:"critical,omitempty" bson:"critical,omitempty"`
+	Critical     bool                 `json:"critical" bson:"critical,omitempty"`
 	ExpiredDate  time.Time            `json:"expired_date,omitempty" bson:"expired_date,omitempty"`
 	CreatedAt    time.Time            `json:"created_at,omitempty" bson:"created_at,omitempty"`
 	UpdatedAt    time.Time            `json:"updated_at,omitempty" bson:"updated_at,omitempty"`

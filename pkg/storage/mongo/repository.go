@@ -48,12 +48,14 @@ func (r *Repository) AddProduct(product adding.Product) (string, error) {
 
 }
 
-func (r *Repository) GetProducts(page int, pageSize int) ([]listing.Product, int64, error) {
-	var products []listing.Product
+func (r *Repository) GetProducts(page int, pageSize int) (products []listing.Product, count int64, err error) {
 	collection := r.db.Collection("products")
 	skip := (page - 1) * pageSize
-	count, err := collection.CountDocuments(context.Background(), bson.D{})
-	cursor, err := collection.Find(context.Background(), bson.D{}, options.Find().SetSkip(int64(skip)), options.Find().SetLimit(int64(pageSize)))
+	count, err = collection.CountDocuments(context.Background(), bson.D{})
+	addFieldsStage := bson.D{{"$addFields", bson.D{{"critical", bson.D{{"$lte", bson.A{"$quantity", "$minimum_stock"}}}}}}}
+	limitStage := bson.D{{"$limit", int64(pageSize)}}
+	skipStage := bson.D{{"$skip", int64(skip)}}
+	cursor, err := collection.Aggregate(context.Background(), mongo.Pipeline{addFieldsStage, skipStage, limitStage})
 	if err != nil {
 		log.Fatal(err)
 		return nil, 0, err
