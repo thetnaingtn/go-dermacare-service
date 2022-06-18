@@ -13,7 +13,7 @@ type Item struct {
 type OrderForm struct {
 	Name        string    `json:"name"`
 	Address     string    `json:"address,omitempty"`
-	PhoneNo     int       `json:"phone_no,omitempty"`
+	PhoneNo     string    `json:"phone_no,omitempty"`
 	Items       []Item    `json:"items"`
 	DeliverDate time.Time `json:"deliver_date,omitempty"`
 }
@@ -28,7 +28,7 @@ type OrderItem struct {
 type Order struct {
 	Name        string     `json:"name" bson:"name"`
 	Address     string     `json:"address,omitempty" bson:"address,omitempty"`
-	PhoneNo     int        `json:"phone_no,omitempty" bson:"phone_no,omitempty"`
+	PhoneNo     string     `json:"phone_no,omitempty" bson:"phone_no,omitempty"`
 	Items       OrderItems `json:"items" bson:"items"`
 	DeliverDate time.Time  `json:"deliver_date,omitempty" bson:"deliver_date,omitempty"`
 	CreatedAt   time.Time  `json:"created_at,omitempty" bson:"created_at,omitempty"`
