@@ -16,6 +16,7 @@ func InitializeRoute(a adding.Service, l listing.Service) *gin.Engine {
 	router.POST("/categories", v1.AddCategory(a))
 
 	router.POST("/orders", v1.AddOrder(a))
+	router.GET("/orders", v1.GetOrders(l))
 
 	return router
 

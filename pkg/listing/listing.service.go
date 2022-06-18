@@ -2,10 +2,12 @@ package listing
 
 type Repository interface {
 	GetProducts(page, pageSize int) ([]Product, int64, error)
+	GetOrders() ([]Order, error)
 }
 
 type Service interface {
 	GetProducts(page, pageSize int) ([]Product, int64, error)
+	GetOrders() ([]Order, error)
 }
 
 type service struct {
@@ -23,4 +25,8 @@ func (s *service) GetProducts(page, pageSize int) ([]Product, int64, error) {
 	}
 
 	return products, count, nil
+}
+
+func (s *service) GetOrders() ([]Order, error) {
+	return s.r.GetOrders()
 }

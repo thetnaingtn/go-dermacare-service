@@ -124,3 +124,55 @@ func (r *Repository) AddOrder(order adding.Order) (string, error) {
 
 	return id.Hex(), nil
 }
+
+func (r *Repository) GetOrders() (orders []listing.Order, err error) {
+	collection := r.db.Collection("orders")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	lookupStage := bson.D{{
+		"$lookup", bson.D{
+			{"from", "categories"},
+			{"localField", "items.categories"},
+			{"foreignField", "_id"},
+			{"as", "categories"},
+		},
+	}}
+
+	unwindStage := bson.D{{"$unwind", "$items"}}
+
+	addFieldStage := bson.D{{"$addFields", bson.D{
+		{"items.categories", bson.D{{
+			"$map", bson.D{{
+				"input", bson.D{
+					{"$filter", bson.D{
+						{"input", "$categories"},
+						{"as", "category"},
+						{"cond", bson.D{{
+							"$in", bson.A{"$$category._id", "$items.categories"},
+						}}},
+					}},
+				},
+			}, {"as", "category"}, {"in", "$$category.name"}},
+		}}},
+	}}}
+
+	groupStage := bson.D{{"$group", bson.D{
+		{"_id", "$_id"},
+		{"name", bson.D{{"$first", "$name"}}},
+		{"address", bson.D{{"$first", "$address"}}},
+		{"phone_no", bson.D{{"$first", "$phone_no"}}},
+		{"items", bson.D{{"$push", "$items"}}},
+		{"deliver_date", bson.D{{"$first", "$deliver_date"}}},
+		{"created_at", bson.D{{"$first", "$created_at"}}},
+	}}}
+
+	cursor, err := collection.Aggregate(ctx, mongo.Pipeline{lookupStage, unwindStage, addFieldStage, groupStage})
+	if err != nil {
+		return nil, err
+	}
+	if err = cursor.All(ctx, &orders); err != nil {
+		return nil, err
+	}
+	return orders, nil
+}

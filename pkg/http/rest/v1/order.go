@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/adding"
+	"github.com/thetnaingtn/go-dermacare-service/pkg/listing"
 )
 
 func AddOrder(service adding.Service) gin.HandlerFunc {
@@ -31,6 +32,23 @@ func AddOrder(service adding.Service) gin.HandlerFunc {
 		ctx.JSON(201, gin.H{
 			"message": "Successfully create order",
 			"id":      id,
+		})
+	}
+}
+
+func GetOrders(service listing.Service) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		orders, err := service.GetOrders()
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Can't list order",
+			})
+			log.Println(err)
+			return
+		}
+		ctx.JSON(200, gin.H{
+			"message": "Successfully retrive orders",
+			"orders":  orders,
 		})
 	}
 }
