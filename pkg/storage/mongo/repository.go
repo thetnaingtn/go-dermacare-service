@@ -68,12 +68,18 @@ func (r *Repository) GetProducts(page int, pageSize int) (products []listing.Pro
 	return products, count, nil
 }
 
-func (r *Repository) GetProductByIds(ids []primitive.ObjectID) (products adding.OrderItems, err error) {
+func (r *Repository) GetProductByIds(ids []primitive.ObjectID, fields []string) (products adding.OrderItems, err error) {
 	collection := r.db.Collection("products")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	cursor, err := collection.Find(ctx, bson.M{"_id": bson.M{"$in": ids}}, options.Find().SetProjection(bson.M{"name": 1, "price": 1, "selling_price": 1, "categories": 1}))
+	desiredFields := bson.M{}
+
+	for _, field := range fields {
+		desiredFields[field] = 1
+	}
+
+	cursor, err := collection.Find(ctx, bson.M{"_id": bson.M{"$in": ids}}, options.Find().SetProjection(desiredFields))
 	if err != nil {
 		return nil, err
 	}

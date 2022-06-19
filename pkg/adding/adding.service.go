@@ -8,7 +8,7 @@ type Repository interface {
 	AddProduct(payload Product) (string, error)
 	AddCategory(payload Category) (string, error)
 	AddOrder(payload Order) (string, error)
-	GetProductByIds(ids []primitive.ObjectID) (OrderItems, error)
+	GetProductByIds(ids []primitive.ObjectID, fields []string) (OrderItems, error)
 }
 
 type Service interface {
@@ -39,7 +39,7 @@ func (s *service) AddOrder(orderForm OrderForm) (string, error) {
 		objectId, _ := primitive.ObjectIDFromHex(item.Id)
 		productIds = append(productIds, objectId)
 	}
-	products, err := s.r.GetProductByIds(productIds)
+	products, err := s.r.GetProductByIds(productIds, []string{"name", "categories", "price", "selling_price"})
 
 	if err != nil {
 		return "", err
