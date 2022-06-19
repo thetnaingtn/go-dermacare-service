@@ -39,7 +39,7 @@ func (s *service) AddCategory(category Category) (string, error) {
 }
 
 func (s *service) AddOrder(orderForm OrderForm) (string, error) {
-	var productIds []primitive.ObjectID
+	productIds := make([]primitive.ObjectID, len(orderForm.Items))
 	for _, item := range orderForm.Items {
 		objectId, _ := primitive.ObjectIDFromHex(item.Id)
 		productIds = append(productIds, objectId)
