@@ -21,6 +21,14 @@ func AddOrder(service adding.Service) gin.HandlerFunc {
 		}
 
 		id, err := service.AddOrder(order)
+
+		if err == adding.ErrOutOfStock {
+			ctx.JSON(http.StatusConflict, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
 		if err != nil {
 			ctx.JSON(500, gin.H{
 				"message": "Can't create order",

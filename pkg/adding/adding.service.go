@@ -1,6 +1,9 @@
 package adding
 
 import (
+	"errors"
+	"strings"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -25,6 +28,8 @@ func NewService(r Repository) Service {
 	return &service{r}
 }
 
+var ErrOutOfStock = errors.New("Out of Stock")
+
 func (s *service) AddProduct(product Product) (string, error) {
 	return s.r.AddProduct(product)
 }
@@ -39,10 +44,27 @@ func (s *service) AddOrder(orderForm OrderForm) (string, error) {
 		objectId, _ := primitive.ObjectIDFromHex(item.Id)
 		productIds = append(productIds, objectId)
 	}
-	products, err := s.r.GetProductByIds(productIds, []string{"name", "categories", "price", "selling_price"})
+	// Get all interested products
+	products, err := s.r.GetProductByIds(productIds, []string{"name", "categories", "price", "selling_price", "quantity"})
 
 	if err != nil {
 		return "", err
+	}
+
+	// check whether they are in stock
+	inStockProducts := products.GetInStockProduct(orderForm.Items)
+	var outOfStock []string
+
+	for product, inStock := range inStockProducts {
+		if !inStock {
+			outOfStock = append(outOfStock, product)
+		}
+	}
+
+	// if not return ErrOutOfStock
+	if msg := strings.Join(outOfStock, ","); msg != "" {
+		// TODO: add proper error msg to ErrOutOfStock
+		return "", ErrOutOfStock
 	}
 
 	orderItems := products.AddQuantity(orderForm.Items)
