@@ -9,7 +9,7 @@ import (
 type Item struct {
 	Name         string   `json:"name"`
 	Price        int64    `json:"price"`
-	SellingPrice int64    `json:"selling_price" bson:"selling_price"`
+	SellingPrice int64    `json:"selling_price" bson:"selling_price"` // need to specify bson tag otherwise mongo-db driver will marshal the field as lowercase(sellingprice).
 	Categories   []string `json:"categories"`
 	Quantity     int      `json:"quantity"`
 }
