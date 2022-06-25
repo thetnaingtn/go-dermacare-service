@@ -69,6 +69,20 @@ func (r *Repository) GetProducts(page int, pageSize int) (products []listing.Pro
 	return products, count, nil
 }
 
+func (r *Repository) GetProductById(id primitive.ObjectID) (product listing.Product, err error) {
+	collection := r.db.Collection("products")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	err = collection.FindOne(ctx, bson.D{{"_id", id}}).Decode(&product)
+
+	if err != nil {
+		return listing.Product{}, err
+	}
+
+	return product, nil
+}
+
 func (r *Repository) GetProductByIds(ids []primitive.ObjectID, fields []string) (products adding.OrderItems, err error) {
 	collection := r.db.Collection("products")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)

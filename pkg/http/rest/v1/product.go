@@ -40,6 +40,41 @@ func AddProduct(service adding.Service) gin.HandlerFunc {
 	}
 }
 
+func GetProduct(service listing.Service) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error": "Can't process the product id",
+			})
+			log.Println(err)
+			return
+		}
+
+		product, err := service.GetProduct(id)
+		if err != nil && err == mongo.ErrNoDocuments {
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"error": "Document not found",
+			})
+			return
+		}
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Can't get the product",
+			})
+			log.Println(err)
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "Successfully retrieve product",
+			"product": product,
+		})
+
+	}
+}
+
 func GetProducts(service listing.Service) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		p := ctx.Query("page")
