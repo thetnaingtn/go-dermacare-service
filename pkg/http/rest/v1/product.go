@@ -18,7 +18,7 @@ func AddProduct(service adding.Service) gin.HandlerFunc {
 		var product adding.Product
 		if err := ctx.ShouldBind(&product); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": "Can't parse incoming request data",
+				"error": "Can't parse incoming request data",
 			})
 			log.Println(err)
 			return
@@ -26,8 +26,8 @@ func AddProduct(service adding.Service) gin.HandlerFunc {
 
 		id, err := service.AddProduct(product)
 		if err != nil {
-			ctx.JSON(500, gin.H{
-				"message": "Can't create product",
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Can't create product",
 			})
 			log.Println(err)
 			return
