@@ -77,27 +77,21 @@ func GetProduct(service listing.Service) gin.HandlerFunc {
 
 func GetProducts(service listing.Service) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		p := ctx.Query("page")
+		p := ctx.DefaultQuery("page", "1")
 		size := ctx.DefaultQuery("pageSize", "10")
-		if p == "" {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": "Page should provide in request",
-			})
-			return
-		}
 
 		page, err := strconv.Atoi(p)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Couldn't parse the incoming page no",
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error": "Couldn't parse the incoming page no",
 			})
 			log.Println(err)
 			return
 		}
 		pageSize, err := strconv.Atoi(size)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Couldn't parse the incoming page no",
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"error": "Couldn't parse the incoming page size",
 			})
 			log.Println(err)
 			return
