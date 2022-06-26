@@ -8,6 +8,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/adding"
+	"github.com/thetnaingtn/go-dermacare-service/pkg/deleting"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/editing"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/listing"
 	"go.mongodb.org/mongo-driver/bson"
@@ -124,6 +125,23 @@ func (r *Repository) UpdateProduct(id primitive.ObjectID, form editing.ProductEd
 	}
 
 	return updatedProduct, nil
+}
+
+func (r *Repository) DeleteProductById(id primitive.ObjectID) (product deleting.Product, err error) {
+	collection := r.db.Collection("products")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	filterDoc := bson.D{{"_id", id}}
+
+	err = collection.FindOneAndDelete(ctx, filterDoc).Decode(&product)
+	if err != nil {
+		return deleting.Product{}, err
+	}
+
+	return product, nil
+
 }
 
 func (r *Repository) AddCategory(category adding.Category) (string, error) {
