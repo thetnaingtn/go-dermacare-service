@@ -55,7 +55,7 @@ func (orders OrderItems) GetInStockProduct(items []Item) map[string]bool {
 	for _, order := range orders {
 		for _, item := range items {
 			if order.Id.Hex() == item.Id {
-				if order.Quantity <= item.Quantity {
+				if order.Quantity < item.Quantity {
 					inStock[order.Name] = false
 				} else {
 					inStock[order.Name] = true
