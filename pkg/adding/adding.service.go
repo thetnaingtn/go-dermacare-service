@@ -12,6 +12,7 @@ type Repository interface {
 	AddCategory(payload Category) (string, error)
 	AddOrder(payload Order) (string, error)
 	GetProductByIds(ids []primitive.ObjectID, fields []string) (OrderItems, error)
+	UpdateInStockProduct(items []Item) error
 }
 
 type Service interface {
@@ -68,6 +69,10 @@ func (s *service) AddOrder(orderForm OrderForm) (string, error) {
 	}
 
 	orderItems := products.AddQuantity(orderForm.Items)
+
+	if err = s.r.UpdateInStockProduct(orderForm.Items); err != nil {
+		return "", err
+	}
 
 	order := Order{
 		Name:        orderForm.Name,

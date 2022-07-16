@@ -127,6 +127,31 @@ func (r *Repository) UpdateProduct(id primitive.ObjectID, form editing.ProductEd
 	return updatedProduct, nil
 }
 
+func (r *Repository) UpdateInStockProduct(items []adding.Item) error {
+	collection := r.db.Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	models := make([]mongo.WriteModel, len(items))
+	opts := options.BulkWrite().SetOrdered(false)
+	for idx, item := range items {
+		id, _ := primitive.ObjectIDFromHex(item.Id)
+		update := bson.D{
+			{"$inc", bson.D{
+				{"quantity", -item.Quantity},
+			}},
+		}
+		model := mongo.NewUpdateOneModel().SetFilter(bson.D{{"_id", id}}).SetUpdate(update)
+		models[idx] = model
+	}
+
+	if _, err := collection.BulkWrite(ctx, models, opts); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *Repository) DeleteProductById(id primitive.ObjectID) (product deleting.Product, err error) {
 	collection := r.db.Collection("products")
 
