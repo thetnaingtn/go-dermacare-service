@@ -38,11 +38,13 @@ type Order struct {
 type OrderItems []OrderItem
 
 func (orders OrderItems) AddQuantity(items []Item) (orderItems OrderItems) {
+CheckOrder:
 	for _, order := range orders {
 		for _, item := range items {
 			if order.Id.Hex() == item.Id {
 				order.Quantity = item.Quantity
 				orderItems = append(orderItems, order)
+				continue CheckOrder
 			}
 		}
 	}
