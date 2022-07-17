@@ -52,6 +52,7 @@ func (orders OrderItems) AddQuantity(items []Item) (orderItems OrderItems) {
 
 func (orders OrderItems) GetInStockProduct(items []Item) map[string]bool {
 	inStock := make(map[string]bool)
+CheckOrder:
 	for _, order := range orders {
 		for _, item := range items {
 			if order.Id.Hex() == item.Id {
@@ -60,6 +61,7 @@ func (orders OrderItems) GetInStockProduct(items []Item) map[string]bool {
 				} else {
 					inStock[order.Name] = true
 				}
+				continue CheckOrder
 			}
 		}
 	}
