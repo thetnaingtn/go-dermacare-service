@@ -50,10 +50,11 @@ func (r *Repository) AddProduct(product adding.Product) (string, error) {
 
 }
 
-func (r *Repository) GetProducts(page int, pageSize int) (products []listing.Product, count int64, err error) {
+func (r *Repository) GetProducts(page int, pageSize int) ([]listing.Product, int64, error) {
+	products := []listing.Product{}
 	collection := r.db.Collection("products")
 	skip := (page - 1) * pageSize
-	count, err = collection.CountDocuments(context.Background(), bson.D{})
+	count, err := collection.CountDocuments(context.Background(), bson.D{})
 	addFieldsStage := bson.D{{"$addFields", bson.D{{"critical", bson.D{{"$lte", bson.A{"$quantity", "$minimum_stock"}}}}}}}
 	limitStage := bson.D{{"$limit", int64(pageSize)}}
 	skipStage := bson.D{{"$skip", int64(skip)}}
@@ -84,6 +85,7 @@ func (r *Repository) GetProductById(id primitive.ObjectID) (product listing.Prod
 	return product, nil
 }
 
+// refactor return type adding.OrderItems
 func (r *Repository) GetProductByIds(ids []primitive.ObjectID, fields []string) (products adding.OrderItems, err error) {
 	collection := r.db.Collection("products")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
@@ -208,7 +210,8 @@ func (r *Repository) AddOrder(order adding.Order) (string, error) {
 	return id.Hex(), nil
 }
 
-func (r *Repository) GetOrders() (orders []listing.Order, err error) {
+func (r *Repository) GetOrders() ([]listing.Order, error) {
+	orders := []listing.Order{}
 	collection := r.db.Collection("orders")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
