@@ -227,6 +227,16 @@ func (r *Repository) GetOrders() ([]listing.Order, error) {
 
 	unwindStage := bson.D{{"$unwind", "$items"}}
 
+	// check and set default items.categories if there is nothing
+	addDefaultCategories := bson.D{{"$addFields", bson.D{
+		{"items.categories", bson.D{{
+			"$cond", bson.D{{
+				"if", bson.D{{
+					"$ne", bson.A{bson.D{{"$type", "$items.categories"}}, "array"}}},
+			}, {"then", bson.A{}}, {"else", "$items.categories"}},
+		}}},
+	}}}
+
 	addFieldStage := bson.D{{"$addFields", bson.D{
 		{"items.categories", bson.D{{
 			"$map", bson.D{{
@@ -253,7 +263,7 @@ func (r *Repository) GetOrders() ([]listing.Order, error) {
 		{"created_at", bson.D{{"$first", "$created_at"}}},
 	}}}
 
-	cursor, err := collection.Aggregate(ctx, mongo.Pipeline{lookupStage, unwindStage, addFieldStage, groupStage})
+	cursor, err := collection.Aggregate(ctx, mongo.Pipeline{lookupStage, unwindStage, addDefaultCategories, addFieldStage, groupStage})
 	if err != nil {
 		return nil, err
 	}
