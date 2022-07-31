@@ -26,6 +26,7 @@ func NewRepository(client *mongo.Client) *Repository {
 		panic("Can't load env variables")
 	}
 	db := client.Database(os.Getenv("DB_NAME"))
+	db.CreateCollection(context.TODO(), "products", getSchemaValidation("products"))
 	return &Repository{db}
 }
 
