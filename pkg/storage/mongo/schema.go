@@ -8,7 +8,7 @@ import (
 
 var productSchema = bson.M{
 	"bsonType": "object",
-	"required": []string{"name", "quantity", "price", "selling_price"},
+	"required": []string{"name", "quantity", "price", "selling_price", "minimum_stock"},
 	"properties": bson.M{
 		"name": bson.M{
 			"bsonType":    "string",
@@ -39,5 +39,9 @@ func getSchemaValidation(name string) *options.CreateCollectionOptions {
 		schema = productSchema
 	}
 
-	return options.CreateCollection().SetValidator(schema)
+	validator := bson.M{
+		"$jsonSchema": schema,
+	}
+
+	return options.CreateCollection().SetValidator(validator)
 }
