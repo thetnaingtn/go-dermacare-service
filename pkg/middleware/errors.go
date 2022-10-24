@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,18 +10,23 @@ import (
 func Error() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Next()
-		for _, err := range ctx.Errors {
-			unWrapError := err.Unwrap()
-			switch unWrapError.(type) {
-			case validate.FieldErrors:
-				ctx.JSON(http.StatusBadRequest, unWrapError)
+		for _, errMsg := range ctx.Errors {
+			unWrapErr := errMsg.Unwrap()
+			var re validate.ErrorResponse
+			var status int
+			switch err := unWrapErr.(type) {
 			case *validate.RequestError:
-				log.Println("")
+				re = validate.ErrorResponse{
+					Error: err.Error(),
+				}
+				status = err.Status
 			default:
-				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"error": "server error",
-				})
+				re = validate.ErrorResponse{
+					Error: "server error",
+				}
+				status = http.StatusInternalServerError
 			}
+			ctx.JSON(status, re)
 		}
 		ctx.Abort()
 	}
