@@ -10,45 +10,40 @@ import (
 	"github.com/thetnaingtn/go-dermacare-service/pkg/adding"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/deleting"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/editing"
-	"github.com/thetnaingtn/go-dermacare-service/pkg/error"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/listing"
+	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func AddProduct(service adding.Service) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func AddProduct(service adding.Service) validate.Handler {
+	return func(ctx *gin.Context) error {
 		var product adding.Product
 
 		if err := ctx.ShouldBind(&product); err != nil {
 			if _, ok := err.(validator.ValidationErrors); ok {
-				fieldErrors := error.GetFieldsValidationErrors(err)
-				ctx.JSON(http.StatusBadRequest, gin.H{
-					"error": fieldErrors,
-				})
-				return
+				fieldErrors := validate.GetFieldsValidationErrors(err)
+				log.Println(fieldErrors)
+				return fieldErrors
 			}
 
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Can't parse incoming request data",
-			})
 			log.Println(err)
-			return
+			return validate.NewRequestError(err, http.StatusBadRequest)
 		}
 
 		id, err := service.AddProduct(product)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Can't create product",
-			})
 			log.Println(err)
-			return
+			return err
 		}
 
 		ctx.JSON(201, gin.H{
 			"message": "Successfully create product",
 			"id":      id,
 		})
+
+		return nil
+
 	}
 }
 
