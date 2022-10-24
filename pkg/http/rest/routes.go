@@ -7,12 +7,13 @@ import (
 	"github.com/thetnaingtn/go-dermacare-service/pkg/editing"
 	v1 "github.com/thetnaingtn/go-dermacare-service/pkg/http/rest/v1"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/listing"
+	"github.com/thetnaingtn/go-dermacare-service/pkg/middleware"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
 )
 
 func InitializeRoute(a adding.Service, l listing.Service, e editing.Service, d deleting.Service) *gin.Engine {
 	router := gin.Default()
-	router.Use()
+	router.Use(middleware.Error())
 
 	router.POST("/products", validate.ErrHandler(v1.AddProduct(a)))
 	router.GET("/products", v1.GetProducts(l))
