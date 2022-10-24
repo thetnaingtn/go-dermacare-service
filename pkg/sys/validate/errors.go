@@ -18,6 +18,10 @@ type RequestError struct {
 	Status int
 }
 
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
 func NewRequestError(err error, status int) error {
 	return &RequestError{
 		Err:    err,
