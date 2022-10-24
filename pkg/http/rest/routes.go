@@ -16,10 +16,10 @@ func InitializeRoute(a adding.Service, l listing.Service, e editing.Service, d d
 	router.Use(middleware.Error())
 
 	router.POST("/products", validate.ErrHandler(v1.AddProduct(a)))
-	router.GET("/products", v1.GetProducts(l))
-	router.GET("/products/:id", v1.GetProduct(l))
-	router.PUT("/products/:id", v1.UpdateProduct(e))
-	router.DELETE("/products/:id", v1.DeleteProduct(d))
+	router.GET("/products", validate.ErrHandler(v1.GetProducts(l)))
+	router.GET("/products/:id", validate.ErrHandler(v1.GetProduct(l)))
+	router.PUT("/products/:id", validate.ErrHandler(v1.UpdateProduct(e)))
+	router.DELETE("/products/:id", validate.ErrHandler(v1.DeleteProduct(d)))
 
 	router.POST("/categories", v1.AddCategory(a))
 

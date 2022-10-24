@@ -28,7 +28,7 @@ func AddProduct(service adding.Service) validate.Handler {
 			}
 
 			log.Println(err)
-			return validate.NewRequestError(err, http.StatusBadRequest)
+			return validate.NewRequestError(validate.ErrInvalidPayload, http.StatusBadRequest)
 		}
 
 		id, err := service.AddProduct(product)
@@ -47,31 +47,22 @@ func AddProduct(service adding.Service) validate.Handler {
 	}
 }
 
-func GetProduct(service listing.Service) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func GetProduct(service listing.Service) validate.Handler {
+	return func(ctx *gin.Context) error {
 		id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Can't process the product id",
-			})
 			log.Println(err)
-			return
+			return validate.NewRequestError(validate.ErrInvalidId, http.StatusBadRequest)
 		}
 
 		product, err := service.GetProduct(id)
 		if err != nil && err == mongo.ErrNoDocuments {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "Document not found",
-			})
-			return
+			return validate.NewRequestError(validate.ErrNotFound, http.StatusNotFound)
 		}
 
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Can't get the product",
-			})
 			log.Println(err)
-			return
+			return err
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
@@ -79,38 +70,32 @@ func GetProduct(service listing.Service) gin.HandlerFunc {
 			"product": product,
 		})
 
+		return nil
 	}
 }
 
-func GetProducts(service listing.Service) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func GetProducts(service listing.Service) validate.Handler {
+	return func(ctx *gin.Context) error {
 		p := ctx.DefaultQuery("page", "1")
 		size := ctx.DefaultQuery("pageSize", "10")
 
 		page, err := strconv.Atoi(p)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Couldn't parse the incoming page no",
-			})
 			log.Println(err)
-			return
+			return validate.NewRequestError(validate.ErrInvalidPayload, http.StatusBadRequest)
 		}
+
 		pageSize, err := strconv.Atoi(size)
+
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Couldn't parse the incoming page size",
-			})
 			log.Println(err)
-			return
+			return validate.NewRequestError(validate.ErrInvalidPayload, http.StatusBadRequest)
 		}
 
 		products, count, err := service.GetProducts(page, pageSize)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Couldn't retrieve products",
-			})
 			log.Println(err)
-			return
+			return err
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
@@ -119,43 +104,33 @@ func GetProducts(service listing.Service) gin.HandlerFunc {
 			"total":    count,
 		})
 
+		return nil
 	}
 }
 
-func UpdateProduct(service editing.Service) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func UpdateProduct(service editing.Service) validate.Handler {
+	return func(ctx *gin.Context) error {
 		var productEditForm editing.ProductEditForm
 		productId, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 		if err != nil {
-			// TODO:need to check valid hex or not.
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Can't process the product id",
-			})
 			log.Println(err)
-			return
+			return validate.NewRequestError(validate.ErrInvalidId, http.StatusBadRequest)
 		}
+
 		err = ctx.ShouldBind(&productEditForm)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Can't process the request body",
-			})
 			log.Println(err)
-			return
+			return validate.NewRequestError(validate.ErrInvalidPayload, http.StatusBadRequest)
 		}
 
 		updatedProduct, err := service.UpdateProduct(productId, productEditForm)
 		if err != nil {
 			if err == mongo.ErrNoDocuments {
-				ctx.JSON(http.StatusNotFound, gin.H{
-					"error": "Document not found",
-				})
-				return
+				return validate.NewRequestError(validate.ErrNotFound, http.StatusNotFound)
 			}
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Can't update the document",
-			})
+
 			log.Println(err)
-			return
+			return err
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
@@ -163,38 +138,35 @@ func UpdateProduct(service editing.Service) gin.HandlerFunc {
 			"product": updatedProduct,
 		})
 
+		return nil
 	}
 }
 
-func DeleteProduct(service deleting.Service) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func DeleteProduct(service deleting.Service) validate.Handler {
+	return func(ctx *gin.Context) error {
 		id, err := primitive.ObjectIDFromHex(ctx.Param("id"))
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Can't process the product id",
-			})
 			log.Println(err)
-			return
+			return validate.NewRequestError(validate.ErrInvalidId, http.StatusBadRequest)
+
 		}
 
 		product, err := service.DeleteProduct(id)
 		if err != nil {
 			if err == mongo.ErrNoDocuments {
-				ctx.JSON(http.StatusNotFound, gin.H{
-					"error": "Document not found",
-				})
-				return
+				log.Println(err)
+				return validate.NewRequestError(validate.ErrNotFound, http.StatusNotFound)
 			}
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Can't deleted the document",
-			})
+
 			log.Println(err)
-			return
+			return err
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "Successfully deleted product",
 			"product": product,
 		})
+
+		return nil
 	}
 }
