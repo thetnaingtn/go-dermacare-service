@@ -7,6 +7,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+var (
+	ErrInvalidPayload = errors.New("Invalid payload")
+	ErrNotFound       = errors.New("Entity not found")
+	ErrInvalidId      = errors.New("ID is not in a proper form")
+)
+
 type RequestError struct {
 	Err    error
 	Status int
