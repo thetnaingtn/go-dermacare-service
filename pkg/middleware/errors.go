@@ -20,6 +20,12 @@ func Error() gin.HandlerFunc {
 					Error: err.Error(),
 				}
 				status = err.Status
+			case validate.FieldErrors:
+				re = validate.ErrorResponse{
+					Error:  "validation errors",
+					Fields: err.Fields(),
+				}
+				status = http.StatusBadRequest
 			default:
 				re = validate.ErrorResponse{
 					Error: "server error",
