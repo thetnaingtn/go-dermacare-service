@@ -3,14 +3,16 @@ package validate
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/go-playground/validator/v10"
 )
 
 var (
-	ErrInvalidPayload = errors.New("Invalid payload")
-	ErrNotFound       = errors.New("Entity not found")
-	ErrInvalidId      = errors.New("ID is not in a proper form")
+	ErrInvalidPayload   = errors.New("Invalid payload")
+	ErrNotFound         = errors.New("Entity not found")
+	ErrInvalidId        = errors.New("ID is not in a proper form")
+	ErrFieldsValidation = errors.New("Fields validation error")
 )
 
 type RequestError struct {
@@ -19,7 +21,8 @@ type RequestError struct {
 }
 
 type ErrorResponse struct {
-	Error string `json:"error"`
+	Error  string            `json:"error"`
+	Fields map[string]string `json:"fields,omitempty"`
 }
 
 func NewRequestError(err error, status int) error {
@@ -64,7 +67,7 @@ func GetFieldsValidationErrors(e error) FieldErrors {
 	if ok := errors.As(e, &ve); ok {
 		errs := make([]FieldError, len(ve))
 		for i, e := range ve {
-			errorMsg := FieldError{Field: e.Field(), Error: msgForTag(e.Tag())}
+			errorMsg := FieldError{Field: e.Field(), Error: msgForTag(e.Tag(), e.Field())}
 			errs[i] = errorMsg
 		}
 		return errs
@@ -72,10 +75,18 @@ func GetFieldsValidationErrors(e error) FieldErrors {
 	return nil
 }
 
-func msgForTag(tag string) string {
+func (fe FieldErrors) Fields() map[string]string {
+	fields := make(map[string]string)
+	for _, f := range fe {
+		fields[f.Field] = f.Error
+	}
+	return fields
+}
+
+func msgForTag(tag string, field string) string {
 	switch tag {
 	case "required":
-		return "This field is required"
+		return fmt.Sprintf("%s is required", field)
 	default:
 		return "Invalid tag"
 	}
