@@ -5,13 +5,14 @@ import (
 	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Repository interface {
 	AddProduct(payload Product) (string, error)
 	AddCategory(payload Category) (string, error)
 	AddOrder(payload Order) (string, error)
-	AddUser(payload User) error
+	Signup(payload User) error
 	GetProductByIds(ids []primitive.ObjectID, fields []string) (OrderItems, error)
 	UpdateInStockProduct(items []Item) error
 }
@@ -20,7 +21,7 @@ type Service interface {
 	AddProduct(payload Product) (string, error)
 	AddCategory(payload Category) (string, error)
 	AddOrder(payload OrderForm) (string, error)
-	AddUser(payload User) error
+	Signup(payload User) error
 }
 
 type service struct {
@@ -87,6 +88,13 @@ func (s *service) AddOrder(orderForm OrderForm) (string, error) {
 	return s.r.AddOrder(order)
 }
 
-func (s *service) AddUser(u User) error {
-	return s.r.AddUser(u)
+func (s *service) Signup(u User) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
+	u.Password = string(hash)
+
+	if err != nil {
+		return err
+	}
+
+	return s.r.Signup(u)
 }

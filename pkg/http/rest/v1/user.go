@@ -6,40 +6,25 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/adding"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
 )
 
-func AddUser(service adding.Service) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func Signup(service adding.Service) validate.Handler {
+	return func(ctx *gin.Context) error {
 		var user adding.User
 		if err := ctx.ShouldBind(&user); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Can't parse request payload",
-			})
-			return
+			log.Println(err)
+			return validate.NewRequestError(validate.ErrInvalidPayload, http.StatusBadRequest)
 		}
 
-		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
-		user.Password = string(hash)
-
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Can't hash password",
-			})
-			return
+		if err := service.Signup(user); err != nil {
+			log.Println(err)
+			return err
 		}
-
-		if err := service.AddUser(user); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Can't create user",
-			})
-			return
-		}
-
-		log.Printf("%+v", user)
-
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "Successfully create user",
 		})
+
+		return nil
 	}
 }

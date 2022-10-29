@@ -274,7 +274,7 @@ func (r *Repository) GetOrders() ([]listing.Order, error) {
 	return orders, nil
 }
 
-func (r *Repository) AddUser(u adding.User) error {
+func (r *Repository) Signup(u adding.User) error {
 	collection := r.db.Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
