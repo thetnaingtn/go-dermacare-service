@@ -15,6 +15,7 @@ type Repository interface {
 	Signup(payload User) error
 	GetProductByIds(ids []primitive.ObjectID, fields []string) (OrderItems, error)
 	UpdateInStockProduct(items []Item) error
+	GetUserByEmail(email string) (User, error)
 }
 
 type Service interface {
@@ -22,6 +23,7 @@ type Service interface {
 	AddCategory(payload Category) (string, error)
 	AddOrder(payload OrderForm) (string, error)
 	Signup(payload User) error
+	Signin(payload User) error
 }
 
 type service struct {
@@ -97,4 +99,20 @@ func (s *service) Signup(u User) error {
 	}
 
 	return s.r.Signup(u)
+}
+
+func (s *service) Signin(u User) error {
+	user, err := s.r.GetUserByEmail(u.Email)
+
+	if err != nil {
+		return err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(u.Password))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -285,3 +285,17 @@ func (r *Repository) Signup(u adding.User) error {
 
 	return nil
 }
+
+func (r *Repository) GetUserByEmail(email string) (adding.User, error) {
+	var user adding.User
+	collection := r.db.Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	if err := collection.FindOne(ctx, bson.D{{"email", email}}).Decode(&user); err != nil {
+		return adding.User{}, err
+	}
+
+	return user, nil
+
+}

@@ -27,6 +27,7 @@ func InitializeRoute(a adding.Service, l listing.Service, e editing.Service, d d
 	router.GET("/orders", v1.GetOrders(l))
 
 	router.POST("/signup", validate.ErrHandler(v1.Signup(a)))
+	router.POST("/signin", validate.ErrHandler(v1.Signin(a)))
 
 	return router
 

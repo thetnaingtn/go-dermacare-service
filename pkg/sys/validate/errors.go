@@ -9,10 +9,11 @@ import (
 )
 
 var (
-	ErrInvalidPayload   = errors.New("Invalid payload")
-	ErrNotFound         = errors.New("Entity not found")
-	ErrInvalidId        = errors.New("ID is not in a proper form")
-	ErrFieldsValidation = errors.New("Fields validation error")
+	ErrInvalidPayload    = errors.New("Invalid payload")
+	ErrNotFound          = errors.New("Entity not found")
+	ErrInvalidId         = errors.New("ID is not in a proper form")
+	ErrFieldsValidation  = errors.New("Fields validation error")
+	ErrIncorrectPassword = errors.New("Incorrect password")
 )
 
 type RequestError struct {
