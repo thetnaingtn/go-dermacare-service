@@ -2,8 +2,12 @@ package adding
 
 import (
 	"errors"
+	"io"
+	"os"
 	"strings"
+	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -24,6 +28,7 @@ type Service interface {
 	AddOrder(payload OrderForm) (string, error)
 	Signup(payload User) error
 	Signin(payload User) error
+	GenerateToken(payload User) (string, error)
 }
 
 type service struct {
@@ -115,4 +120,45 @@ func (s *service) Signin(u User) error {
 	}
 
 	return nil
+}
+
+func (s *service) GenerateToken(u User) (string, error) {
+	file, err := os.Open("key/private.pem")
+	if err != nil {
+		return "", err
+	}
+
+	privatePEM, err := io.ReadAll(io.LimitReader(file, 1024*1024))
+	if err != nil {
+		return "", err
+	}
+
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privatePEM))
+	if err != nil {
+		return "", err
+	}
+
+	claims := struct {
+		jwt.RegisteredClaims
+		User string
+	}{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   "subject",
+			Issuer:    "derma care service",
+			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(8760 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
+		},
+		User: u.Email,
+	}
+
+	method := jwt.GetSigningMethod("RS256")
+	token := jwt.NewWithClaims(method, claims)
+
+	tokenstr, err := token.SignedString(privateKey)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenstr, nil
+
 }

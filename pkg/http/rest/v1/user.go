@@ -54,6 +54,13 @@ func Signin(service adding.Service) validate.Handler {
 			return err
 		}
 
+		token, err := service.GenerateToken(user)
+		if err != nil {
+			return err
+		}
+
+		ctx.SetCookie("token", token, 60*60*24, "/", "localhost:3000", true, true)
+
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "user exist",
 		})
