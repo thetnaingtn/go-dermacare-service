@@ -1,0 +1,12 @@
+FROM golang:1.18 as build_service
+
+COPY . /dermacare
+WORKDIR /dermacare/cmd
+RUN go build -o service
+
+
+FROM alpine:3.14
+COPY --from=build_service /dermacare/cmd/service /dermacare/service
+WORKDIR /dermacare
+CMD ["./service"]
+
