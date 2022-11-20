@@ -1,0 +1,14 @@
+# air reload
+tmp/
+
+# git
+.git/
+.github/
+.gitignore
+
+.dockerignore
+.air.toml
+.env.example
+makefile
+
+README.md
