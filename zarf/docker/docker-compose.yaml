@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  dermacare:
+    image: dermacare-service:1.0
+    networks:
+      - dermacare
+    ports:
+      - "3000:3000"
+  db:
+    image: mongo:latest
+    networks:
+      - dermacare
+    ports:
+      - "27017:27017"
+networks:
+  dermacare:
+    external: true
+    name: dermacare
