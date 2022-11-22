@@ -2,10 +2,15 @@ version: '3.7'
 services:
   dermacare:
     image: dermacare-service:1.0
+    environment:
+      - DB_URI=mongodb://db:27017
+      - DB_NAME = dermacare
     networks:
       - dermacare
     ports:
       - "3000:3000"
+    depends_on:
+      - db
   db:
     image: mongo:latest
     networks:
