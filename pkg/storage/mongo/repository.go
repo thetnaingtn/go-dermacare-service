@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/adding"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/deleting"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/editing"
@@ -22,9 +21,6 @@ type Repository struct {
 }
 
 func NewRepository(client *mongo.Client) *Repository {
-	if err := godotenv.Load(); err != nil {
-		panic("Can't load env variables")
-	}
 	db := client.Database(os.Getenv("DB_NAME"))
 	db.CreateCollection(context.TODO(), "products", getSchemaValidation("products"))
 	return &Repository{db}
