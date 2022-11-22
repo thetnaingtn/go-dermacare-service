@@ -6,14 +6,15 @@ generate-private-key:
 generate-public-key:
 	openssl rsa -pubout -in key/private.pem -out key/public.pem
 
-dermaservice:
+start: build dermaservice-up
+
+build:
 	docker build -f zarf/docker/Dockerfile.service -t dermacare-service:$(VERSION) .
 
-dermaservice-up: dermaservice start
-
-dermaservice-stop: docker-compose -f zarf/docker/docker-compose.yaml stop
-
-start:
+dermaservice-up: 
 	docker-compose -f zarf/docker/docker-compose.yaml up
 
-	
+dermaservice-stop: 
+	docker-compose -f zarf/docker/docker-compose.yaml stop
+
+
