@@ -1,12 +1,10 @@
 FROM golang:1.18 as build_service
-
+ENV CGO_ENABLED 0
 COPY . /dermacare
 WORKDIR /dermacare/cmd
 RUN go build -o service
 
-
-FROM alpine:3.14
+FROM alpine:3.16
 COPY --from=build_service /dermacare/cmd/service /dermacare/service
 WORKDIR /dermacare
-CMD ["./service"]
-
+CMD [ "./service" ]
