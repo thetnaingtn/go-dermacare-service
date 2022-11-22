@@ -4,7 +4,7 @@ services:
     image: dermacare-service:1.0
     environment:
       - DB_URI=mongodb://db:27017
-      - DB_NAME = dermacare
+      - DB_NAME=dermacare
     networks:
       - dermacare
     ports:
