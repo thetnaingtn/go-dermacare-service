@@ -4,7 +4,13 @@ COPY . /dermacare
 WORKDIR /dermacare/cmd
 RUN go build -o service
 
+WORKDIR /dermacare/apps/tooling
+RUN go build .
+CMD [ "./tooling" ]
+
 FROM alpine:3.16
 COPY --from=build_service /dermacare/cmd/service /dermacare/service
+COPY --from=build_service /dermacare/key/private.pem /dermacare/key/private.pem
+COPY --from=build_service /dermacare/key/public.pem /dermacare/key/public.pem
 WORKDIR /dermacare
 CMD [ "./service" ]
