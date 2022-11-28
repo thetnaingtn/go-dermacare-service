@@ -49,8 +49,20 @@ func New() (*Auth, error) {
 	return a, nil
 }
 
-func (a *Auth) GenerateToken() (string, error) {
-	return "", nil
+func (a *Auth) GenerateToken(c Claim) (string, error) {
+	token := jwt.NewWithClaims(a.method, c)
+
+	privateKey, err := getPrivateKey()
+	if err != nil {
+		return "", fmt.Errorf("getting private key while generate token %w", err)
+	}
+
+	tokenString, err := token.SignedString(privateKey)
+	if err != nil {
+		return "", fmt.Errorf("signed token %w", err)
+	}
+
+	return tokenString, nil
 }
 
 func getPrivateKey() (*rsa.PrivateKey, error) {
