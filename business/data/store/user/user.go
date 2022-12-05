@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -47,8 +48,12 @@ func (s Store) Signup(u NewUser) (User, error) {
 	if err != nil {
 		return User{}, err
 	}
-	id := res.InsertedID.(primitive.ObjectID)
-	usr.Id = id.String()
+	id, ok := res.InsertedID.(primitive.ObjectID)
+	if !ok {
+		return User{}, fmt.Errorf("can't convert inserted id")
+	}
+
+	usr.Id = id.Hex()
 
 	return usr, nil
 
