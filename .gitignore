@@ -4,3 +4,4 @@ tmp
 key
 cmd/service
 .DS_Store
+.air.toml
