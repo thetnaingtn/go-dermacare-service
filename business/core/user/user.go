@@ -11,18 +11,18 @@ type Repository interface {
 }
 
 type Core struct {
-	Store Repository
+	store Repository
 }
 
 func NewCore(s Repository) Core {
 	return Core{
-		Store: s,
+		store: s,
 	}
 }
 
 func (c Core) Create(nu user.NewUser) (user.User, error) {
 
-	usr, err := c.Store.Signup(nu)
+	usr, err := c.store.Signup(nu)
 	if err != nil {
 		return user.User{}, fmt.Errorf("create: %w", err)
 	}
