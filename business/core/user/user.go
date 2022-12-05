@@ -4,10 +4,12 @@ import (
 	"fmt"
 
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/user"
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
 )
 
 type Repository interface {
 	Signup(user.NewUser) (user.User, error)
+	Authenticate(email, passowrd string) (auth.Claim, error)
 }
 
 type Core struct {
@@ -28,4 +30,13 @@ func (c Core) Create(nu user.NewUser) (user.User, error) {
 	}
 
 	return usr, nil
+}
+
+func (c Core) Authenticate(email, password string) (auth.Claim, error) {
+	claim, err := c.store.Authenticate(email, password)
+	if err != nil {
+		return auth.Claim{}, err
+	}
+
+	return claim, nil
 }
