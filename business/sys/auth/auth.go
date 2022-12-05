@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -24,12 +25,14 @@ func New() (*Auth, error) {
 
 	privateKey, err := getPrivateKey()
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
 	keyFunc := func(t *jwt.Token) (any, error) {
 		publicKey, err := getPublicKey(privateKey)
 		if err != nil {
+			log.Println(err)
 			return nil, err
 		}
 
@@ -66,7 +69,7 @@ func (a *Auth) GenerateToken(c Claim) (string, error) {
 }
 
 func getPrivateKey() (*rsa.PrivateKey, error) {
-	fsys := os.DirFS("/key")
+	fsys := os.DirFS("key")
 	file, err := fsys.Open("private.pem")
 	if err != nil {
 		return nil, fmt.Errorf("open private.pem: %w", err)
