@@ -5,3 +5,7 @@ key
 cmd/service
 .DS_Store
 .air.toml
+
+# environment variables
+.env.dev
+
