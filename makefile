@@ -12,7 +12,7 @@ build:
 	docker build -f zarf/docker/Dockerfile.service -t dermacare-service:$(VERSION) .
 
 dermaservice-up: 
-	docker-compose -f zarf/docker/docker-compose.yaml up
+	docker-compose -f zarf/docker/docker-compose.yaml --env-file zarf/docker/.env.dev up
 
 dermaservice-stop: 
 	docker-compose -f zarf/docker/docker-compose.yaml stop
