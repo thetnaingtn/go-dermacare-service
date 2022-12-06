@@ -70,7 +70,9 @@ func (s Store) Authenticate(email, password string) (auth.Claim, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	collection.FindOne(ctx, bson.M{"email": email}, nil).Decode(&user)
+	if err := collection.FindOne(ctx, bson.M{"email": email}, nil).Decode(&user); err != nil {
+		return auth.Claim{}, err
+	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return auth.Claim{}, validate.ErrIncorrectPassword

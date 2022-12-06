@@ -1,6 +1,7 @@
 package userhandler
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
@@ -9,6 +10,7 @@ import (
 	userstore "github.com/thetnaingtn/go-dermacare-service/business/data/store/user"
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
 	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Handlers struct {
@@ -53,6 +55,10 @@ func (h Handlers) Signin(ctx *gin.Context) error {
 	claim, err := h.Core.Authenticate(credential.Email, credential.Password)
 	if err != nil {
 		log.Println(err)
+		if err == mongo.ErrNoDocuments {
+			er := errors.New("User not found")
+			return validate.NewRequestError(er, http.StatusNotFound)
+		}
 		return err
 	}
 
