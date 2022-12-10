@@ -6,8 +6,8 @@ import (
 	usercore "github.com/thetnaingtn/go-dermacare-service/business/core/user"
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/user"
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
-	"github.com/thetnaingtn/go-dermacare-service/pkg/middleware"
-	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
+	"github.com/thetnaingtn/go-dermacare-service/business/web/middleware"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
