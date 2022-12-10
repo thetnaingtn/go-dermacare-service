@@ -68,6 +68,22 @@ func (a *Auth) GenerateToken(c Claim) (string, error) {
 	return tokenString, nil
 }
 
+func (a *Auth) ValidateToken(tokenStr string) (Claim, error) {
+	var claim Claim
+	token, err := a.parser.ParseWithClaims(tokenStr, &claim, a.keyFunc)
+
+	if err != nil {
+		return Claim{}, err
+	}
+
+	if !token.Valid {
+		err := errors.New("invalid token")
+		return Claim{}, err
+	}
+
+	return claim, nil
+}
+
 func getPrivateKey() (*rsa.PrivateKey, error) {
 	fsys := os.DirFS("key")
 	file, err := fsys.Open("private.pem")
