@@ -34,6 +34,5 @@ func Error() gin.HandlerFunc {
 			}
 			ctx.JSON(status, re)
 		}
-		ctx.Abort()
 	}
 }

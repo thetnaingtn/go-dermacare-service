@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
@@ -17,14 +16,13 @@ func Authenticate(auth *auth.Auth) gin.HandlerFunc {
 		parts := strings.Split(authStr, " ")
 
 		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-			err := errors.New("expect authorization format: Bearer <token>")
-			ctx.AbortWithError(http.StatusUnauthorized, validate.NewRequestError(err, http.StatusUnauthorized))
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, validate.ErrorResponse{Error: "expect authorization format: Bearer <token>"})
 			return
 		}
 
 		claim, err := auth.ValidateToken(parts[1])
 		if err != nil {
-			ctx.AbortWithError(http.StatusUnauthorized, validate.NewRequestError(err, http.StatusUnauthorized))
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, validate.ErrorResponse{Error: err.Error()})
 			return
 		}
 
