@@ -68,9 +68,8 @@ func (h Handlers) Signin(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.SetCookie("token", token, 60*60*24, "/", "localhost:3000", true, true)
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Successfully signin",
+		"token": token,
 	})
 
 	return nil
