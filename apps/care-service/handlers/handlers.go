@@ -2,8 +2,11 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/producthandler"
 	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/userhandler"
+	productcore "github.com/thetnaingtn/go-dermacare-service/business/core/product"
 	usercore "github.com/thetnaingtn/go-dermacare-service/business/core/user"
+	"github.com/thetnaingtn/go-dermacare-service/business/data/store/product"
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/user"
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
@@ -29,5 +32,16 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 	router.POST("/signup", validate.ErrHandler(userHandler.Signup))
 	router.POST("/signin", validate.ErrHandler(userHandler.Signin))
 
+	// product
+	productHandler := producthandler.Handlers{
+		Auth: cfg.Auth,
+		Core: productcore.NewCore(product.NewStore(cfg.DB)),
+	}
+
+	proutes := router.Group("/products")
+	proutes.Use(middleware.Authenticate(cfg.Auth))
+	{
+		proutes.POST("", validate.ErrHandler(productHandler.Create))
+	}
 	return router
 }
