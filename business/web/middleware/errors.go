@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
 )
 
 func Error() gin.HandlerFunc {
