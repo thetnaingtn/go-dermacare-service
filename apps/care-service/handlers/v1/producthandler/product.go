@@ -41,3 +41,29 @@ func (h Handlers) Create(ctx *gin.Context) error {
 
 	return nil
 }
+
+func (h Handlers) Update(ctx *gin.Context) error {
+	var up product.UpdateProduct
+	if err := ctx.ShouldBind(&up); err != nil {
+		if _, ok := err.(validator.ValidationErrors); ok {
+			fieldErrors := validate.GetFieldsValidationErrors(err)
+			log.Println("fields", fieldErrors)
+			return fieldErrors
+		}
+
+		log.Println(err)
+		return validate.NewRequestError(validate.ErrInvalidPayload, http.StatusBadRequest)
+	}
+
+	id := ctx.Param("id")
+
+	p, err := h.Core.Update(up, id)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, p)
+
+	return nil
+}

@@ -32,3 +32,14 @@ type NewProduct struct {
 	MinimumStock int                  `json:"minimum_stock,omitempty" bson:"minimum_stock,omitempty" binding:"required"`
 	ExpiredDate  time.Time            `json:"expired_date,omitempty" bson:"expired_date,omitempty"`
 }
+type UpdateProduct struct {
+	Name         string               `json:"name,omitempty" bson:"name,omitempty"`
+	Quantity     int                  `json:"quantity,omitempty" bson:"quantity,omitempty"`
+	Price        int                  `json:"price,omitempty" bson:"price,omitempty"`
+	SellingPrice int                  `json:"selling_price,omitempty" bson:"selling_price,omitempty"`
+	Categories   []primitive.ObjectID `json:"categories,omitempty" bson:"categories,omitempty"`
+	Description  string               `json:"description,omitempty" bson:"description,omitempty"`
+	Supplier     primitive.ObjectID   `json:"supplier,omitempty" bson:"supplier,omitempty"`
+	MinimumStock int                  `json:"minimum_stock,omitempty" bson:"minimum_stock,omitempty"`
+	ExpiredDate  time.Time            `json:"expired_date,omitempty" bson:"expired_date,omitempty"`
+}

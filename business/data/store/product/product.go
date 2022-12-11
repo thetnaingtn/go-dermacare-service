@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Store struct {
@@ -49,6 +51,25 @@ func (s Store) Create(np NewProduct) (Product, error) {
 	}
 
 	product.Id = id.Hex()
+
+	return product, nil
+}
+
+func (s Store) Update(up UpdateProduct, id primitive.ObjectID) (Product, error) {
+	var product Product
+	collection := s.DB.Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	filterDoc := bson.M{"_id": id}
+	updateDoc := bson.M{"$set": up}
+	options := options.FindOneAndUpdate().SetReturnDocument(1)
+
+	err := collection.FindOneAndUpdate(ctx, filterDoc, updateDoc, options).Decode(&product)
+
+	if err != nil {
+		return Product{}, err
+	}
 
 	return product, nil
 }

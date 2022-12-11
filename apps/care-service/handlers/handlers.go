@@ -42,6 +42,7 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 	proutes.Use(middleware.Authenticate(cfg.Auth))
 	{
 		proutes.POST("", validate.ErrHandler(productHandler.Create))
+		proutes.PUT("/:id", validate.ErrHandler(productHandler.Update))
 	}
 	return router
 }
