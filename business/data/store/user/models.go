@@ -13,9 +13,9 @@ type User struct {
 }
 
 type NewUser struct {
-	Name            string   `json:"name"`
-	Email           string   `json:"email"`
-	Password        string   `json:"password"`
-	PasswordConfirm string   `json:"password_confirm"`
+	Name            string   `json:"name" binding:"required"`
+	Email           string   `json:"email" binding:"required,email"`
+	Password        string   `json:"password" binding:"required"`
+	PasswordConfirm string   `json:"password_confirm" binding:"required,eqfield=Password"`
 	Roles           []string `json:"roles"`
 }

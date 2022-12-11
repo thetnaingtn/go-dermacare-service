@@ -6,10 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	user "github.com/thetnaingtn/go-dermacare-service/business/core/user"
 	userstore "github.com/thetnaingtn/go-dermacare-service/business/data/store/user"
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
-	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -21,6 +22,12 @@ type Handlers struct {
 func (h Handlers) Signup(ctx *gin.Context) error {
 	var user userstore.NewUser
 	if err := ctx.ShouldBind(&user); err != nil {
+		if _, ok := err.(validator.ValidationErrors); ok {
+			fieldErrors := validate.GetFieldsValidationErrors(err)
+			log.Println("fields", fieldErrors)
+			return fieldErrors
+		}
+
 		return validate.NewRequestError(validate.ErrInvalidPayload, http.StatusBadRequest)
 	}
 

@@ -88,6 +88,10 @@ func msgForTag(tag string, field string) string {
 	switch tag {
 	case "required":
 		return fmt.Sprintf("%s is required", field)
+	case "eqfield":
+		return fmt.Sprintf("password and %s doesn't match", field)
+	case "email":
+		return fmt.Sprintf("%s has invalid format", field)
 	default:
 		return "Invalid tag"
 	}

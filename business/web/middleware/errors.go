@@ -22,7 +22,7 @@ func Error() gin.HandlerFunc {
 				status = err.Status
 			case validate.FieldErrors:
 				re = validate.ErrorResponse{
-					Error:  "validation errors",
+					Error:  "Field validation errors",
 					Fields: err.Fields(),
 				}
 				status = http.StatusBadRequest
