@@ -43,3 +43,8 @@ type UpdateProduct struct {
 	MinimumStock int                  `json:"minimum_stock,omitempty" bson:"minimum_stock,omitempty"`
 	ExpiredDate  time.Time            `json:"expired_date,omitempty" bson:"expired_date,omitempty"`
 }
+
+type Products struct {
+	Products []Product `json:"products"`
+	Total    int64     `json:"total"`
+}

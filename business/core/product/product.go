@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	Create(np product.NewProduct) (product.Product, error)
 	Update(up product.UpdateProduct, id primitive.ObjectID) (product.Product, error)
+	Query(page, pageSize int) (product.Products, error)
 }
 
 type Core struct {
@@ -46,4 +47,13 @@ func (c Core) Update(up product.UpdateProduct, id string) (product.Product, erro
 	}
 
 	return p, nil
+}
+
+func (c Core) Query(page, pageSize int) (product.Products, error) {
+	products, err := c.store.Query(page, pageSize)
+	if err != nil {
+		return product.Products{}, err
+	}
+
+	return products, nil
 }

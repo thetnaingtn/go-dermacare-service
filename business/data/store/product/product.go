@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -72,4 +73,38 @@ func (s Store) Update(up UpdateProduct, id primitive.ObjectID) (Product, error) 
 	}
 
 	return product, nil
+}
+
+func (s Store) Query(page, pageSize int) (Products, error) {
+	products := []Product{}
+	collection := s.DB.Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	skip := (page - 1) * pageSize
+	total, err := collection.CountDocuments(ctx, bson.D{})
+
+	addStage := bson.D{{"$addFields", bson.D{{"critical", bson.D{{"$lte", bson.A{"$quantity", "$minimum_stock"}}}}}}}
+	limitStage := bson.D{{"$limit", int64(pageSize)}}
+	skipStage := bson.D{{"$skip", int64(skip)}}
+
+	cursor, err := collection.Aggregate(ctx, mongo.Pipeline{addStage, skipStage, limitStage})
+
+	if err != nil {
+		log.Println(err)
+		return Products{}, err
+	}
+
+	if err := cursor.All(ctx, &products); err != nil {
+		log.Println(err)
+		return Products{}, err
+	}
+
+	p := Products{
+		Products: products,
+		Total:    total,
+	}
+
+	return p, nil
+
 }

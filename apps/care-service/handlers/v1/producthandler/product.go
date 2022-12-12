@@ -1,8 +1,10 @@
 package producthandler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -58,6 +60,31 @@ func (h Handlers) Update(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
 	p, err := h.Core.Update(up, id)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, p)
+
+	return nil
+}
+
+func (h Handlers) Query(ctx *gin.Context) error {
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	if err != nil {
+		log.Println(err)
+		return validate.NewRequestError(fmt.Errorf("page doesn't have a proper value"), http.StatusBadRequest)
+	}
+
+	pageSize, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "15"))
+	if err != nil {
+		log.Println(err)
+		return validate.NewRequestError(fmt.Errorf("pageSize doesn't have a proper value"), http.StatusBadRequest)
+	}
+
+	p, err := h.Core.Query(page, pageSize)
+
 	if err != nil {
 		log.Println(err)
 		return err
