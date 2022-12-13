@@ -94,3 +94,14 @@ func (h Handlers) Query(ctx *gin.Context) error {
 
 	return nil
 }
+
+func (h Handlers) Delete(ctx *gin.Context) error {
+	id := ctx.Param("id")
+	p, err := h.Core.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, p)
+	return nil
+}

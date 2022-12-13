@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -107,4 +109,22 @@ func (s Store) Query(page, pageSize int) (Products, error) {
 
 	return p, nil
 
+}
+
+func (s Store) Delete(id primitive.ObjectID) (Product, error) {
+	var product Product
+	collection := s.DB.Collection("products")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	if err := collection.FindOneAndDelete(ctx, bson.M{"_id": id}).Decode(&product); err != nil {
+		log.Println(err)
+		if err == mongo.ErrNoDocuments {
+			return Product{}, validate.NewRequestError(fmt.Errorf("product not found"), http.StatusNotFound)
+		}
+		return Product{}, err
+	}
+
+	return product, nil
 }

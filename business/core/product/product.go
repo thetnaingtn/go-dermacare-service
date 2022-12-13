@@ -1,15 +1,19 @@
 package core
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/product"
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Repository interface {
 	Create(np product.NewProduct) (product.Product, error)
 	Update(up product.UpdateProduct, id primitive.ObjectID) (product.Product, error)
+	Delete(id primitive.ObjectID) (product.Product, error)
 	Query(page, pageSize int) (product.Products, error)
 }
 
@@ -56,4 +60,22 @@ func (c Core) Query(page, pageSize int) (product.Products, error) {
 	}
 
 	return products, nil
+}
+
+func (c Core) Delete(id string) (product.Product, error) {
+
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println(err)
+		return product.Product{}, validate.NewRequestError(fmt.Errorf("id doesn't have proper form"), http.StatusBadRequest)
+	}
+
+	p, err := c.store.Delete(objectID)
+
+	if err != nil {
+		log.Println(err)
+		return product.Product{}, err
+	}
+
+	return p, nil
 }

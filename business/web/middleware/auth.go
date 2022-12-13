@@ -21,6 +21,7 @@ func Authenticate(auth *auth.Auth) gin.HandlerFunc {
 		}
 
 		claim, err := auth.ValidateToken(parts[1])
+
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, validate.ErrorResponse{Error: err.Error()})
 			return
