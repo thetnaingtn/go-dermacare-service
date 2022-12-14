@@ -1,7 +1,7 @@
 package core
 
 import (
-	"fmt"
+	"errors"
 	"log"
 	"net/http"
 
@@ -10,11 +10,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+var (
+	ErrInvalidId = errors.New("id is invalid or improper form")
+)
+
 type Repository interface {
 	Create(np product.NewProduct) (product.Product, error)
 	Update(up product.UpdateProduct, id primitive.ObjectID) (product.Product, error)
 	Delete(id primitive.ObjectID) (product.Product, error)
 	Query(page, pageSize int) (product.Products, error)
+	QueryById(id primitive.ObjectID) (product.Product, error)
 }
 
 type Core struct {
@@ -62,12 +67,28 @@ func (c Core) Query(page, pageSize int) (product.Products, error) {
 	return products, nil
 }
 
+func (c Core) QueryById(id string) (product.Product, error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println(err)
+		return product.Product{}, validate.NewRequestError(ErrInvalidId, http.StatusBadRequest)
+	}
+	p, err := c.store.QueryById(objectId)
+
+	if err != nil {
+		log.Println(err)
+		return product.Product{}, err
+	}
+
+	return p, nil
+}
+
 func (c Core) Delete(id string) (product.Product, error) {
 
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		log.Println(err)
-		return product.Product{}, validate.NewRequestError(fmt.Errorf("id doesn't have proper form"), http.StatusBadRequest)
+		return product.Product{}, validate.NewRequestError(ErrInvalidId, http.StatusBadRequest)
 	}
 
 	p, err := c.store.Delete(objectID)

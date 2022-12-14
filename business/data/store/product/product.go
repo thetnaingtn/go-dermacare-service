@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+var (
+	ErrProductNotFound = errors.New("product not found")
 )
 
 type Store struct {
@@ -111,6 +116,22 @@ func (s Store) Query(page, pageSize int) (Products, error) {
 
 }
 
+func (s Store) QueryById(id primitive.ObjectID) (Product, error) {
+	var product Product
+	collection := s.DB.Collection("products")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	if err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&product); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Product{}, validate.NewRequestError(ErrProductNotFound, http.StatusNotFound)
+		}
+	}
+
+	return product, nil
+}
+
 func (s Store) Delete(id primitive.ObjectID) (Product, error) {
 	var product Product
 	collection := s.DB.Collection("products")
@@ -121,7 +142,7 @@ func (s Store) Delete(id primitive.ObjectID) (Product, error) {
 	if err := collection.FindOneAndDelete(ctx, bson.M{"_id": id}).Decode(&product); err != nil {
 		log.Println(err)
 		if err == mongo.ErrNoDocuments {
-			return Product{}, validate.NewRequestError(fmt.Errorf("product not found"), http.StatusNotFound)
+			return Product{}, validate.NewRequestError(ErrProductNotFound, http.StatusNotFound)
 		}
 		return Product{}, err
 	}

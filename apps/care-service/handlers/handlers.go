@@ -43,6 +43,7 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 	{
 		proutes.POST("", validate.ErrHandler(productHandler.Create))
 		proutes.GET("", validate.ErrHandler(productHandler.Query))
+		proutes.GET("/:id", validate.ErrHandler(productHandler.QueryById))
 		proutes.PUT("/:id", validate.ErrHandler(productHandler.Update))
 		proutes.DELETE("/:id", validate.ErrHandler(productHandler.Delete))
 	}
