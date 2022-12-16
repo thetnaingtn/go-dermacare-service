@@ -132,7 +132,7 @@ func (s Store) QueryById(id primitive.ObjectID) (Product, error) {
 	return product, nil
 }
 
-func (s Store) Delete(id primitive.ObjectID) (Product, error) {
+func (s Store) DeleteById(id primitive.ObjectID) (Product, error) {
 	var product Product
 	collection := s.DB.Collection("products")
 

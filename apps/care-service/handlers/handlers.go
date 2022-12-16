@@ -45,7 +45,7 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 		proutes.GET("", validate.ErrHandler(productHandler.Query))
 		proutes.GET("/:id", validate.ErrHandler(productHandler.QueryById))
 		proutes.PUT("/:id", validate.ErrHandler(productHandler.Update))
-		proutes.DELETE("/:id", validate.ErrHandler(productHandler.Delete))
+		proutes.DELETE("/:id", validate.ErrHandler(productHandler.DeleteById))
 	}
 	return router
 }

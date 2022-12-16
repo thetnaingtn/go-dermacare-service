@@ -17,7 +17,7 @@ var (
 type Repository interface {
 	Create(np product.NewProduct) (product.Product, error)
 	Update(up product.UpdateProduct, id primitive.ObjectID) (product.Product, error)
-	Delete(id primitive.ObjectID) (product.Product, error)
+	DeleteById(id primitive.ObjectID) (product.Product, error)
 	Query(page, pageSize int) (product.Products, error)
 	QueryById(id primitive.ObjectID) (product.Product, error)
 }
@@ -83,7 +83,7 @@ func (c Core) QueryById(id string) (product.Product, error) {
 	return p, nil
 }
 
-func (c Core) Delete(id string) (product.Product, error) {
+func (c Core) DeleteById(id string) (product.Product, error) {
 
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -91,7 +91,7 @@ func (c Core) Delete(id string) (product.Product, error) {
 		return product.Product{}, validate.NewRequestError(ErrInvalidId, http.StatusBadRequest)
 	}
 
-	p, err := c.store.Delete(objectID)
+	p, err := c.store.DeleteById(objectID)
 
 	if err != nil {
 		log.Println(err)

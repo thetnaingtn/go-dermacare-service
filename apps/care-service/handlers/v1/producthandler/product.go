@@ -106,9 +106,9 @@ func (h Handlers) QueryById(ctx *gin.Context) error {
 	return nil
 }
 
-func (h Handlers) Delete(ctx *gin.Context) error {
+func (h Handlers) DeleteById(ctx *gin.Context) error {
 	id := ctx.Param("id")
-	p, err := h.Core.Delete(id)
+	p, err := h.Core.DeleteById(id)
 	if err != nil {
 		return err
 	}
