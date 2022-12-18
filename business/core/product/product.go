@@ -14,19 +14,11 @@ var (
 	ErrInvalidId = errors.New("id is invalid or improper form")
 )
 
-type Repository interface {
-	Create(np product.NewProduct) (product.Product, error)
-	Update(up product.UpdateProduct, id primitive.ObjectID) (product.Product, error)
-	DeleteById(id primitive.ObjectID) (product.Product, error)
-	Query(page, pageSize int) (product.Products, error)
-	QueryById(id primitive.ObjectID) (product.Product, error)
-}
-
 type Core struct {
-	store Repository
+	store product.Store
 }
 
-func NewCore(s Repository) Core {
+func NewCore(s product.Store) Core {
 	return Core{store: s}
 }
 

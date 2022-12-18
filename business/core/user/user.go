@@ -7,16 +7,11 @@ import (
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
 )
 
-type Repository interface {
-	Signup(user.NewUser) (user.User, error)
-	Authenticate(email, passowrd string) (auth.Claim, error)
-}
-
 type Core struct {
-	store Repository
+	store user.Store
 }
 
-func NewCore(s Repository) Core {
+func NewCore(s user.Store) Core {
 	return Core{
 		store: s,
 	}
