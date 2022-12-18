@@ -132,6 +132,34 @@ func (s Store) QueryById(id primitive.ObjectID) (Product, error) {
 	return product, nil
 }
 
+func (s Store) QueryByIds(ids []primitive.ObjectID, fields []string) ([]Product, error) {
+	products := []Product{}
+
+	collection := s.DB.Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	interestedFields := bson.M{}
+
+	for _, field := range fields {
+		interestedFields[field] = 1
+	}
+
+	cursor, err := collection.Find(ctx, bson.M{"_id": bson.M{"$in": ids}}, options.Find().SetProjection(interestedFields))
+	if err != nil {
+		log.Println(err)
+		return products, err
+	}
+
+	err = cursor.All(ctx, &products)
+	if err != nil {
+		log.Println(err)
+		return products, err
+	}
+
+	return products, nil
+}
+
 func (s Store) DeleteById(id primitive.ObjectID) (Product, error) {
 	var product Product
 	collection := s.DB.Collection("products")
