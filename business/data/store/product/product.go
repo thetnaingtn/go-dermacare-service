@@ -145,7 +145,28 @@ func (s Store) QueryByIds(ids []primitive.ObjectID, fields []string) ([]Product,
 		interestedFields[field] = 1
 	}
 
-	cursor, err := collection.Find(ctx, bson.M{"_id": bson.M{"$in": ids}}, options.Find().SetProjection(interestedFields))
+	lookup := bson.D{{"$lookup", bson.D{{"from", "categories"}, {"localField", "categories"}, {"foreignField", "_id"}, {"as", "categories"}}}}
+	addFields := bson.D{{
+		"$addFields", bson.D{{
+			"categories", bson.D{{
+				"$map", bson.D{
+					{"input", "$categories"},
+					{"in", "$$this._id"},
+				},
+			}},
+		}},
+	}}
+	project := bson.D{{
+		"$project", bson.D{
+			{"_id", 0},
+			{"description", 0},
+			{"created_at", 0},
+			{"updated_at", 0},
+			{"minimum_stock", 0},
+		},
+	}}
+
+	cursor, err := collection.Aggregate(ctx, mongo.Pipeline{lookup, addFields, project})
 	if err != nil {
 		log.Println(err)
 		return products, err
