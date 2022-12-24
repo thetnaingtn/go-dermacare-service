@@ -48,3 +48,15 @@ type Products struct {
 	Products []Product `json:"products"`
 	Total    int64     `json:"total"`
 }
+
+func GetOutOfStockProduct(products []Product, productQtyMap map[string]int) []string {
+	var outStockProducts []string
+
+	for _, p := range products {
+		if p.Quantity < productQtyMap[p.Id] {
+			outStockProducts = append(outStockProducts, p.Name)
+		}
+	}
+
+	return outStockProducts
+}

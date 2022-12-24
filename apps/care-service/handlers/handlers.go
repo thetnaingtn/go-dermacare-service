@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/orderhandler"
 	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/producthandler"
 	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/userhandler"
+	ordercore "github.com/thetnaingtn/go-dermacare-service/business/core/order"
 	productcore "github.com/thetnaingtn/go-dermacare-service/business/core/product"
 	usercore "github.com/thetnaingtn/go-dermacare-service/business/core/user"
+	"github.com/thetnaingtn/go-dermacare-service/business/data/store/order"
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/product"
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/user"
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
@@ -47,5 +50,14 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 		proutes.PUT("/:id", validate.ErrHandler(productHandler.Update))
 		proutes.DELETE("/:id", validate.ErrHandler(productHandler.DeleteById))
 	}
+
+	// order
+	orderHandler := orderhandler.Handlers{
+		Auth: cfg.Auth,
+		Core: ordercore.NewCore(order.NewStore(cfg.DB), product.NewStore(cfg.DB)),
+	}
+
+	router.POST("/orders", validate.ErrHandler(orderHandler.AddOrder))
+
 	return router
 }

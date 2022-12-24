@@ -158,7 +158,6 @@ func (s Store) QueryByIds(ids []primitive.ObjectID, fields []string) ([]Product,
 	}}
 	project := bson.D{{
 		"$project", bson.D{
-			{"_id", 0},
 			{"description", 0},
 			{"created_at", 0},
 			{"updated_at", 0},
