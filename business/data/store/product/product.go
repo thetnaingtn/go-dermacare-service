@@ -82,6 +82,34 @@ func (s Store) Update(up UpdateProduct, id primitive.ObjectID) (Product, error) 
 	return product, nil
 }
 
+func (s Store) UpdateInStockProduct(products []Product) error {
+	collection := s.DB.Collection("products")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	models := make([]mongo.WriteModel, 0, len(products))
+	opts := options.BulkWrite().SetOrdered(false)
+
+	for _, product := range products {
+		id, _ := primitive.ObjectIDFromHex(product.Id)
+		update := bson.D{
+			{"$inc", bson.D{
+				{"quantity", -product.Quantity},
+			}},
+		}
+
+		model := mongo.NewUpdateOneModel().SetFilter(bson.D{{"_id", id}}).SetUpdate(update)
+		models = append(models, model)
+	}
+
+	if _, err := collection.BulkWrite(ctx, models, opts); err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
 func (s Store) Query(page, pageSize int) (Products, error) {
 	products := []Product{}
 	collection := s.DB.Collection("products")
