@@ -57,7 +57,11 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 		Core: ordercore.NewCore(order.NewStore(cfg.DB), product.NewStore(cfg.DB)),
 	}
 
-	router.POST("/orders", validate.ErrHandler(orderHandler.AddOrder))
+	oroutes := router.Group("/orders")
+	oroutes.Use(middleware.Authenticate(cfg.Auth))
+	{
+		oroutes.POST("", validate.ErrHandler(orderHandler.Create))
+	}
 
 	return router
 }
