@@ -38,3 +38,8 @@ type Order struct {
 	CreatedAt   time.Time   `json:"created_at,omitempty" bson:"created_at,omitempty"`
 	UpdatedAt   time.Time   `json:"updated_at,omitempty" bson:"updated_at,omitempty"`
 }
+
+type Orders struct {
+	Orders []Order `json:"orders"`
+	Total  int64   `json:"total"`
+}

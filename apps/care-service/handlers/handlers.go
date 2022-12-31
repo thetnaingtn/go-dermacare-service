@@ -61,6 +61,7 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 	oroutes.Use(middleware.Authenticate(cfg.Auth))
 	{
 		oroutes.POST("", validate.ErrHandler(orderHandler.Create))
+		oroutes.GET("", validate.ErrHandler(orderHandler.Query))
 	}
 
 	return router

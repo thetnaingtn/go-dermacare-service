@@ -87,3 +87,12 @@ func (c Core) Create(no order.NewOrder) (order.Order, error) {
 	return ord, nil
 
 }
+
+func (c Core) Query(page, pageSize int) (order.Orders, error) {
+	orders, err := c.order.Query(page, pageSize)
+	if err != nil {
+		return order.Orders{}, err
+	}
+
+	return orders, err
+}
