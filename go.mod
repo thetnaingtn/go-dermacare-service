@@ -1,12 +1,11 @@
 module github.com/thetnaingtn/go-dermacare-service
 
-go 1.17
+go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.8.0
 	github.com/go-playground/validator/v10 v10.10.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
-	github.com/joho/godotenv v1.4.0
 	go.mongodb.org/mongo-driver v1.9.1
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 )

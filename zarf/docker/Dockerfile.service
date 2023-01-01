@@ -1,0 +1,16 @@
+FROM golang:1.18 as build_service
+ENV CGO_ENABLED 0
+COPY . /dermacare
+WORKDIR /dermacare/apps/care-service
+RUN go build -o service
+
+WORKDIR /dermacare/apps/tooling
+RUN go build .
+CMD [ "./tooling" ]
+
+FROM alpine:3.16
+COPY --from=build_service /dermacare/apps/care-service/service /dermacare/service
+COPY --from=build_service /dermacare/key/private.pem /dermacare/key/private.pem
+COPY --from=build_service /dermacare/key/public.pem /dermacare/key/public.pem
+WORKDIR /dermacare
+CMD [ "./service" ]
