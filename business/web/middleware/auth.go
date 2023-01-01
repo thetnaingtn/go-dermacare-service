@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
-	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
 )
 
 func Authenticate(auth *auth.Auth) gin.HandlerFunc {

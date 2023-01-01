@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/thetnaingtn/go-dermacare-service/business/sys/auth"
-	"github.com/thetnaingtn/go-dermacare-service/pkg/sys/validate"
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
