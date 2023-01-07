@@ -8,7 +8,11 @@ Rename .air.example.toml to .air.toml and modify `DB_URI` and `DB_NAME` properly
 ```
 full_bin = "DB_URI=YOUR_DB_URI DB_NAME=YOUR_DB_NAME ./tmp/main"
 ```
-After that, you can just run `air` in the root of your project directory.
+Then run 
+```
+make generate-private-key && generate-public-key
+```
+to generate `public` and `private` keys pair. After that, you can just run `air` in the root of your project directory.
 ## Running inside container
 To run the application inside container you need to do these things.
 1. copy .env.example inside `zarf/docker` to .env and populate `DB_URI` `DB_NAME` with proper values.
