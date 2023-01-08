@@ -42,3 +42,24 @@ func (h Handler) Create(ctx *gin.Context) error {
 
 	return nil
 }
+
+func (h Handler) Update(ctx *gin.Context) error {
+	var uc category.UpdateCategory
+	err := ctx.ShouldBind(&uc)
+	if err != nil {
+		log.Println(err)
+		return validate.NewRequestError(err, http.StatusBadRequest)
+	}
+
+	id := ctx.Param("id")
+
+	category, err := h.Core.Update(id, uc)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, category)
+
+	return nil
+}

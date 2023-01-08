@@ -3,11 +3,12 @@ package category
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Store struct {
@@ -18,9 +19,11 @@ func NewStore(db *mongo.Database) Store {
 	return Store{DB: db}
 }
 
+var collection = "categories"
+
 func (s Store) Create(nc NewCategory) (Category, error) {
 	var category Category
-	collection := s.DB.Collection("categories")
+	collection := s.DB.Collection(collection)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -34,7 +37,6 @@ func (s Store) Create(nc NewCategory) (Category, error) {
 	res, err := collection.InsertOne(ctx, category)
 
 	if err != nil {
-		log.Println(err)
 		return Category{}, fmt.Errorf("Error when insert new category: %w", err)
 	}
 
@@ -45,6 +47,25 @@ func (s Store) Create(nc NewCategory) (Category, error) {
 	}
 
 	category.ID = id.Hex()
+
+	return category, nil
+}
+
+func (s Store) Update(id primitive.ObjectID, uc UpdateCategory) (Category, error) {
+	var category Category
+	collection := s.DB.Collection(collection)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	filterDoc := bson.M{"_id": id}
+	updateDoc := bson.M{"$set": uc}
+	options := options.FindOneAndUpdate().SetReturnDocument(1)
+
+	res := collection.FindOneAndUpdate(ctx, filterDoc, updateDoc, options)
+
+	if err := res.Decode(&category); err != nil {
+		return Category{}, fmt.Errorf("Error occur when unmarshal updated result: %w", err)
+	}
 
 	return category, nil
 }

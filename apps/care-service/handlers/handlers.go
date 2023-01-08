@@ -76,6 +76,7 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 	croutes.Use(middleware.Authenticate(cfg.Auth))
 	{
 		croutes.POST("", validate.ErrHandler(categoryHandler.Create))
+		croutes.PUT("/:id", validate.ErrHandler(categoryHandler.Update))
 	}
 
 	return router
