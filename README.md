@@ -10,7 +10,7 @@ full_bin = "DB_URI=YOUR_DB_URI DB_NAME=YOUR_DB_NAME ./tmp/main"
 ```
 Then run 
 ```
-make generate-private-key && generate-public-key
+make generate-private-key && make generate-public-key
 ```
 to generate `public` and `private` keys pair. After that, you can just run `air` in the root of your project directory.
 ## Running inside container
