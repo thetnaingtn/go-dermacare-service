@@ -63,3 +63,14 @@ func (h Handler) Update(ctx *gin.Context) error {
 
 	return nil
 }
+
+func (h Handler) DeleteById(ctx *gin.Context) error {
+	id := ctx.Param("id")
+	c, err := h.Core.DeleteById(id)
+	if err != nil {
+		return err
+	}
+	ctx.JSON(http.StatusOK, c)
+
+	return nil
+}

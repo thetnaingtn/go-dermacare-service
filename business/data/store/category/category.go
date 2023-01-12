@@ -3,8 +3,10 @@ package category
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
+	"github.com/thetnaingtn/go-dermacare-service/business/sys/validate"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -68,4 +70,22 @@ func (s Store) Update(id primitive.ObjectID, uc UpdateCategory) (Category, error
 	}
 
 	return category, nil
+}
+
+func (s Store) DeleteById(id primitive.ObjectID) (Category, error) {
+	var category Category
+	collection := s.DB.Collection("categories")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	if err := collection.FindOneAndDelete(ctx, bson.M{"_id": id}, nil).Decode(&category); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Category{}, validate.NewRequestError(validate.ErrNotFound, http.StatusNotFound)
+		}
+
+		return Category{}, fmt.Errorf("Error occur when decoding FindOneAndDelete: %w", err)
+	}
+
+	return category, nil
+
 }
