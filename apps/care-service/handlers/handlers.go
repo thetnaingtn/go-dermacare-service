@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/categoryhandler"
 	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/orderhandler"
 	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/producthandler"
 	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers/v1/userhandler"
+	categorycore "github.com/thetnaingtn/go-dermacare-service/business/core/category"
 	ordercore "github.com/thetnaingtn/go-dermacare-service/business/core/order"
 	productcore "github.com/thetnaingtn/go-dermacare-service/business/core/product"
 	usercore "github.com/thetnaingtn/go-dermacare-service/business/core/user"
+	"github.com/thetnaingtn/go-dermacare-service/business/data/store/category"
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/order"
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/product"
 	"github.com/thetnaingtn/go-dermacare-service/business/data/store/user"
@@ -62,6 +65,20 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 	{
 		oroutes.POST("", validate.ErrHandler(orderHandler.Create))
 		oroutes.GET("", validate.ErrHandler(orderHandler.Query))
+	}
+
+	// category
+	categoryHandler := categoryhandler.Handler{
+		Core: categorycore.NewCore(category.NewStore(cfg.DB)),
+	}
+
+	croutes := router.Group("/categories")
+	croutes.Use(middleware.Authenticate(cfg.Auth))
+	{
+		croutes.GET("", validate.ErrHandler(categoryHandler.Query))
+		croutes.POST("", validate.ErrHandler(categoryHandler.Create))
+		croutes.PUT("/:id", validate.ErrHandler(categoryHandler.Update))
+		croutes.DELETE("/:id", validate.ErrHandler(categoryHandler.DeleteById))
 	}
 
 	return router
