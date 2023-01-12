@@ -21,3 +21,8 @@ type UpdateCategory struct {
 	CreatedAt   time.Time `json:"created_at,omitempty" bson:"created_at,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty" bson:"updated_at,omitempty"`
 }
+
+type Categories struct {
+	Categories []Category `json:"categories"`
+	Total      int        `json:"total"`
+}

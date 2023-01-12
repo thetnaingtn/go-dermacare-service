@@ -75,6 +75,7 @@ func InitializeRoute(cfg APIConfig) *gin.Engine {
 	croutes := router.Group("/categories")
 	croutes.Use(middleware.Authenticate(cfg.Auth))
 	{
+		croutes.GET("", validate.ErrHandler(categoryHandler.Query))
 		croutes.POST("", validate.ErrHandler(categoryHandler.Create))
 		croutes.PUT("/:id", validate.ErrHandler(categoryHandler.Update))
 		croutes.DELETE("/:id", validate.ErrHandler(categoryHandler.DeleteById))

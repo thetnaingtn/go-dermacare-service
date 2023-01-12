@@ -89,3 +89,27 @@ func (s Store) DeleteById(id primitive.ObjectID) (Category, error) {
 	return category, nil
 
 }
+
+func (s Store) Query() (Categories, error) {
+	var categories []Category
+	collection := s.DB.Collection("categories")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	cur, err := collection.Find(ctx, bson.M{})
+
+	if err != nil {
+		return Categories{}, err
+	}
+
+	if err := cur.All(ctx, &categories); err != nil {
+		return Categories{}, err
+	}
+
+	c := Categories{
+		Categories: categories,
+		Total:      len(categories),
+	}
+
+	return c, nil
+}

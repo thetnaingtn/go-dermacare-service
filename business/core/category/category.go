@@ -63,3 +63,13 @@ func (c Core) DeleteById(id string) (category.Category, error) {
 	return cat, err
 
 }
+
+func (c Core) Query() (category.Categories, error) {
+	categories, err := c.store.Query()
+
+	if err != nil {
+		return category.Categories{}, err
+	}
+
+	return categories, nil
+}

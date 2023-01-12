@@ -74,3 +74,13 @@ func (h Handler) DeleteById(ctx *gin.Context) error {
 
 	return nil
 }
+
+func (h Handler) Query(ctx *gin.Context) error {
+	categories, err := h.Core.Query()
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, categories)
+	return nil
+}
