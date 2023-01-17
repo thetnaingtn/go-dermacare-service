@@ -3,15 +3,20 @@ package mongo
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func Setup() (*mongo.Client, func()) {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(os.Getenv("DB_URI")))
+type DBConfig struct {
+	Host string
+	Port string
+	Name string
+}
+
+func CreateDatabase(cfg DBConfig) (*mongo.Database, func()) {
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)))
 	if err != nil {
 		panic(err)
 	}
@@ -27,10 +32,6 @@ func Setup() (*mongo.Client, func()) {
 		}
 	}
 
-	return client, fn
-}
-
-func CreateDatabase(client *mongo.Client) *mongo.Database {
-	db := client.Database(os.Getenv("DB_NAME"))
-	return db
+	db := client.Database(cfg.Name)
+	return db, fn
 }
