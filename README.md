@@ -43,6 +43,7 @@ DB_NAME=YOUR_DB_NAME
 4. Run `make start`. This command will build `dermacare-service:tag` image and will start the application.
 5. Server is running on port `3000`.
 ## TODO
+* Add Unit Test for Data Layer.
 * Support search(filter) in all query services.
 * Indexing on email fields to prevent duplicate email.
 * Add other services
