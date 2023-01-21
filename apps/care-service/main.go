@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	"github.com/thetnaingtn/go-dermacare-service/apps/care-service/handlers"
@@ -14,10 +16,11 @@ func main() {
 		v.RegisterTagNameFunc(web.ValidatorTagNameFunc)
 	}
 
-	client, fn := mongo.Setup()
+	db, fn := mongo.CreateDatabase(mongo.DBConfig{
+		Host: os.Getenv("DB_HOST"),
+		Name: os.Getenv("DB_NAME"),
+	})
 	defer fn()
-
-	db := mongo.CreateDatabase(client)
 
 	auth, _ := auth.New()
 	apiConfig := handlers.APIConfig{

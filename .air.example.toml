@@ -12,7 +12,7 @@ tmp_dir = "tmp"
   exclude_regex = ["_test.go"]
   exclude_unchanged = false
   follow_symlink = false
-  full_bin = "DB_URI=DB_URI DB_NAME=DB_NAME ./tmp/main"
+  full_bin = "DB_PORT=DB_PORT DB_HOST=DB_HOST DB_NAME=DB_NAME ./tmp/main"
   include_dir = []
   include_ext = ["go", "tpl", "tmpl", "html"]
   kill_delay = "0s"
