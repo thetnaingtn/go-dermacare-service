@@ -17,7 +17,6 @@ func main() {
 	}
 
 	db, fn := mongo.CreateDatabase(mongo.DBConfig{
-		Port: os.Getenv("DB_PORT"),
 		Host: os.Getenv("DB_HOST"),
 		Name: os.Getenv("DB_NAME"),
 	})
