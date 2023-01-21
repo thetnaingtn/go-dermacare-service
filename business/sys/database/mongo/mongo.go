@@ -11,12 +11,11 @@ import (
 
 type DBConfig struct {
 	Host string
-	Port string
 	Name string
 }
 
 func CreateDatabase(cfg DBConfig) (*mongo.Database, func()) {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s", cfg.Host)))
 	if err != nil {
 		panic(err)
 	}
