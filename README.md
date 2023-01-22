@@ -42,6 +42,17 @@ DB_NAME=YOUR_DB_NAME
 > Note `db` is come from `services` name which declare inside `docker-compose.yaml`.
 4. Run `make start`. This command will build `dermacare-service:tag` image and will start the application.
 5. Server is running on port `3000`.
+## Running Tests
+Unit tests can be run for specific folder or can be run at root level. To run unit test for specific folder, go to the folder and enter command
+```
+go test -v
+```
+> Note `-v` flag is for verbose
+
+To run all unit tests run this command at root level
+```
+make test
+```
 ## TODO
 * Add Unit Test for Data Layer.
 * Support search(filter) in all query services.
