@@ -113,3 +113,20 @@ func (s Store) Query() (Categories, error) {
 
 	return c, nil
 }
+
+func (s Store) QueryById(id primitive.ObjectID) (Category, error) {
+	var category Category
+	collection := s.DB.Collection("categories")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	res := collection.FindOne(ctx, bson.M{"_id": id})
+	if err := res.Decode(&category); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Category{}, validate.ErrNotFound
+		}
+		return Category{}, err
+	}
+
+	return category, nil
+}
