@@ -1,5 +1,8 @@
 VERSION := 1.0
 
+test:
+	go test ./... -count=1
+
 generate-private-key:
 	openssl genpkey -algorithm RSA -out key/private.pem -pkeyopt rsa_keygen_bits:2048
 
