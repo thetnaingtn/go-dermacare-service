@@ -122,6 +122,9 @@ func (s Store) QueryById(id primitive.ObjectID) (Category, error) {
 
 	res := collection.FindOne(ctx, bson.M{"_id": id})
 	if err := res.Decode(&category); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Category{}, validate.ErrNotFound
+		}
 		return Category{}, err
 	}
 
